@@ -448,6 +448,322 @@ html, body {
   transform:scale(1.04);
 }
 
+
+/* ── TAPPABLE IB ── */
+.tappable-ib {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: border-color 0.2s, transform 0.12s;
+  overflow: hidden;
+}
+
+/* Lightning slash layer */
+.tappable-ib::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -120%;
+  width: 60%;
+  height: 200%;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    rgba(0,230,118,0.0) 30%,
+    rgba(0,230,118,0.55) 50%,
+    rgba(174,234,0,0.35) 60%,
+    transparent 80%
+  );
+  transform: skewX(-18deg);
+  transition: none;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Green border top flash */
+.tappable-ib::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00e676, #aeea00, transparent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: none;
+  pointer-events: none;
+  z-index: 6;
+}
+
+/* When lit class is applied via JS */
+.tappable-ib.lit {
+  border-color: rgba(0,230,118,0.7) !important;
+  background: rgba(0,230,118,0.06);
+  transform: scale(0.97);
+}
+.tappable-ib.lit::before {
+  animation: lightSlash 0.55s cubic-bezier(0.25,0.46,0.45,0.94) forwards;
+}
+.tappable-ib.lit::after {
+  animation: topFlash 0.55s ease forwards;
+}
+
+@keyframes lightSlash {
+  0%   { left: -120%; opacity: 0; }
+  15%  { opacity: 1; }
+  100% { left: 160%;  opacity: 0; }
+}
+@keyframes topFlash {
+  0%   { transform: scaleX(0); opacity: 1; }
+  50%  { transform: scaleX(1); opacity: 1; }
+  100% { transform: scaleX(1); opacity: 0; }
+}
+
+/* Ripple dot from tap center */
+.tap-ripple {
+  position: absolute;
+  border-radius: 50%;
+  width: 8px; height: 8px;
+  background: rgba(0,230,118,0.6);
+  transform: scale(0);
+  pointer-events: none;
+  z-index: 7;
+  animation: rippleOut 0.55s ease forwards;
+}
+@keyframes rippleOut {
+  0%   { transform: scale(0);  opacity: 0.9; }
+  100% { transform: scale(18); opacity: 0; }
+}
+
+/* Corner spark dots */
+.tappable-ib .spark {
+  position: absolute;
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: #aeea00;
+  pointer-events: none;
+  z-index: 8;
+  opacity: 0;
+}
+.tappable-ib.lit .spark-tl { animation: sparkFly 0.5s ease forwards; top: 6px; left: 6px; --sx: -6px; --sy: -6px; }
+.tappable-ib.lit .spark-tr { animation: sparkFly 0.5s ease forwards 0.04s; top: 6px; right: 6px; --sx: 6px; --sy: -6px; }
+.tappable-ib.lit .spark-bl { animation: sparkFly 0.5s ease forwards 0.08s; bottom: 6px; left: 6px; --sx: -6px; --sy: 6px; }
+.tappable-ib.lit .spark-br { animation: sparkFly 0.5s ease forwards 0.06s; bottom: 6px; right: 6px; --sx: 6px; --sy: 6px; }
+@keyframes sparkFly {
+  0%   { opacity: 1; transform: translate(0,0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--sx), var(--sy)) scale(0); }
+}
+
+/* ── SHARED MODAL OVERLAY ── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(8px);
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.active { display: flex; }
+
+/* ── CALENDAR MODAL ── */
+.cal-card {
+  background: linear-gradient(145deg, #071a08, #0a2e0c);
+  border: 1px solid rgba(0,230,118,0.35);
+  border-radius: 18px;
+  padding: 22px 20px 20px;
+  width: min(340px, 92vw);
+  box-shadow: 0 0 50px rgba(0,230,118,0.2), 0 0 100px rgba(0,0,0,0.7);
+  animation: cardIn 0.28s cubic-bezier(0.34,1.56,0.64,1);
+  position: relative;
+}
+.cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.cal-header .cal-nav {
+  background: none;
+  border: 1px solid rgba(0,230,118,0.25);
+  color: #00e676;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.cal-header .cal-nav:active { background: rgba(0,230,118,0.15); }
+.cal-month-label {
+  font-family: 'Anton', sans-serif;
+  font-size: 18px;
+  letter-spacing: 3px;
+  color: #fff;
+  text-transform: uppercase;
+}
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  text-align: center;
+}
+.cal-day-name {
+  font-size: clamp(9px, 2.2vw, 11px);
+  color: rgba(0,230,118,0.5);
+  letter-spacing: 1px;
+  padding-bottom: 6px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.cal-day {
+  font-family: 'Oswald', sans-serif;
+  font-size: clamp(12px, 3vw, 15px);
+  padding: clamp(5px,1.5vw,8px) 0;
+  border-radius: 6px;
+  color: rgba(255,255,255,0.55);
+  cursor: default;
+  transition: background 0.15s;
+}
+.cal-day.active-month { color: #c8f5d5; }
+.cal-day.today {
+  background: rgba(0,230,118,0.1);
+  color: #00e676;
+  font-weight: 700;
+}
+.cal-day.match-day {
+  background: linear-gradient(135deg, #00e676, #aeea00) !important;
+  color: #071a08 !important;
+  font-family: 'Anton', sans-serif;
+  font-weight: 900;
+  border-radius: 50%;
+  box-shadow: 0 0 16px rgba(0,230,118,0.65);
+  animation: matchPulse 1.8s ease-in-out infinite;
+}
+@keyframes matchPulse {
+  0%,100% { box-shadow: 0 0 12px rgba(0,230,118,0.6); transform: scale(1); }
+  50%      { box-shadow: 0 0 24px rgba(0,230,118,0.9); transform: scale(1.08); }
+}
+.cal-legend {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+}
+.cal-legend-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00e676, #aeea00);
+  box-shadow: 0 0 8px rgba(0,230,118,0.6);
+  flex-shrink: 0;
+}
+
+/* ── TIMER MODAL ── */
+.timer-card {
+  background: linear-gradient(145deg, #071a08, #0a2e0c);
+  border: 1px solid rgba(0,230,118,0.35);
+  border-radius: 18px;
+  padding: 26px 22px 22px;
+  width: min(340px, 92vw);
+  text-align: center;
+  box-shadow: 0 0 50px rgba(0,230,118,0.2), 0 0 100px rgba(0,0,0,0.7);
+  animation: cardIn 0.28s cubic-bezier(0.34,1.56,0.64,1);
+  position: relative;
+}
+.timer-title {
+  font-family: 'Anton', sans-serif;
+  font-size: clamp(14px, 3.5vw, 18px);
+  letter-spacing: 4px;
+  color: rgba(0,230,118,0.7);
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+.timer-units {
+  display: flex;
+  justify-content: center;
+  gap: clamp(8px, 2vw, 16px);
+  margin-bottom: 18px;
+}
+.timer-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+.timer-num {
+  font-family: 'Anton', sans-serif;
+  font-size: clamp(36px, 10vw, 56px);
+  color: #fff;
+  line-height: 1;
+  min-width: clamp(52px, 14vw, 70px);
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(0,230,118,0.2);
+  border-radius: 10px;
+  padding: 8px 4px 6px;
+  text-align: center;
+  text-shadow: 0 0 20px rgba(0,230,118,0.4);
+  transition: color 0.3s;
+}
+.timer-num.flash {
+  color: #00e676;
+}
+.timer-lbl {
+  font-size: clamp(8px, 2vw, 10px);
+  letter-spacing: 3px;
+  color: rgba(0,230,118,0.55);
+  text-transform: uppercase;
+}
+.timer-sep {
+  font-family: 'Anton', sans-serif;
+  font-size: clamp(28px, 8vw, 44px);
+  color: rgba(0,230,118,0.4);
+  line-height: 1;
+  padding-top: 8px;
+  animation: sepBlink 1s step-end infinite;
+}
+@keyframes sepBlink {
+  0%,100% { opacity: 1; }
+  50%      { opacity: 0.15; }
+}
+.timer-footer {
+  font-size: clamp(11px, 2.8vw, 13px);
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 1.5px;
+}
+.timer-footer span {
+  color: rgba(0,230,118,0.7);
+  font-weight: 700;
+}
+.timer-done {
+  display: none;
+  font-family: 'Anton', sans-serif;
+  font-size: clamp(22px, 6vw, 30px);
+  color: #00e676;
+  letter-spacing: 3px;
+  text-shadow: 0 0 30px rgba(0,230,118,0.7);
+  margin-bottom: 10px;
+}
+
+/* close btn reuse */
+.modal-close {
+  position: absolute;
+  top: 12px; right: 14px;
+  background: none; border: none;
+  color: rgba(0,230,118,0.55);
+  font-size: 22px; cursor: pointer;
+  line-height: 1;
+  transition: color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.modal-close:active { color: #00e676; }
+
+
+
 </style>
 </head>
 <body>
@@ -535,17 +851,25 @@ html, body {
       </div>
 
       <div class="info-strip">
-        <div class="ib">
+        <div class="ib tappable-ib" id="dateCard" onclick="tapLight(this); openCalendar()" title="View on calendar">
+          <span class="spark spark-tl"></span>
+          <span class="spark spark-tr"></span>
+          <span class="spark spark-bl"></span>
+          <span class="spark spark-br"></span>
           <span class="ib-ico">📅</span>
           <div class="ib-lbl">Date</div>
           <div class="ib-val">8 May<br>2026</div>
-          <div class="ib-sub">Friday</div>
+          <div class="ib-sub">Tap to view ▾</div>
         </div>
-        <div class="ib">
+        <div class="ib tappable-ib" id="kickCard" onclick="tapLight(this); openTimer()" title="Countdown to kick-off">
+          <span class="spark spark-tl"></span>
+          <span class="spark spark-tr"></span>
+          <span class="spark spark-bl"></span>
+          <span class="spark spark-br"></span>
           <span class="ib-ico">⏱</span>
           <div class="ib-lbl">Kick-off</div>
           <div class="ib-val">4:30<br>PM</div>
-          <div class="ib-sub">Be on time!</div>
+          <div class="ib-sub">Tap for timer ▾</div>
         </div>
         <div class="ib">
           <span class="ib-ico">🏟️</span>
@@ -705,7 +1029,6 @@ html, body {
           <div class="chip" onclick="showProfile('niloy')">Ahsun Niloy</div>
         </div>
       </div>
-
       <div class="footer-tape">
         <div class="ft">Psych Dept.</div>
         <div class="fb">⚽ &nbsp; 8 MAY 2026</div>
@@ -788,6 +1111,141 @@ html, body {
   function closeProfileBtn() {
     document.getElementById('profileOverlay').classList.remove('active');
   }
+
+  /* ── CALENDAR ── */
+  const MATCH_DATE = new Date(2026, 4, 8); // May = month 4
+  let calViewYear = 2026, calViewMonth = 4; // start on May 2026
+
+  const MONTH_NAMES = ['January','February','March','April','May','June',
+                       'July','August','September','October','November','December'];
+  const DAY_NAMES   = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+
+  function renderCalendar() {
+    const label = document.getElementById('calMonthLabel');
+    const grid  = document.getElementById('calGrid');
+    label.textContent = MONTH_NAMES[calViewMonth] + ' ' + calViewYear;
+
+    // day name headers
+    let html = DAY_NAMES.map(d => '<div class="cal-day-name">'+d+'</div>').join('');
+
+    const firstDay = new Date(calViewYear, calViewMonth, 1).getDay();
+    const daysInMonth = new Date(calViewYear, calViewMonth+1, 0).getDate();
+    const daysInPrev  = new Date(calViewYear, calViewMonth, 0).getDate();
+
+    const today = new Date();
+    const todayStr = today.getFullYear()+'-'+(today.getMonth())+'-'+today.getDate();
+
+    // prev month filler
+    for (let i = firstDay - 1; i >= 0; i--) {
+      html += '<div class="cal-day">' + (daysInPrev - i) + '</div>';
+    }
+
+    // current month
+    for (let d = 1; d <= daysInMonth; d++) {
+      const isMatch   = (calViewYear === 2026 && calViewMonth === 4 && d === 8);
+      const isTodayD  = (calViewYear === today.getFullYear() && calViewMonth === today.getMonth() && d === today.getDate());
+      let cls = 'cal-day active-month';
+      if (isMatch)  cls += ' match-day';
+      if (isTodayD && !isMatch) cls += ' today';
+      html += '<div class="'+cls+'">' + d + '</div>';
+    }
+
+    // next month filler
+    const total = firstDay + daysInMonth;
+    const remaining = (7 - (total % 7)) % 7;
+    for (let d = 1; d <= remaining; d++) {
+      html += '<div class="cal-day">' + d + '</div>';
+    }
+
+    grid.innerHTML = html;
+  }
+
+  function calNav(dir) {
+    calViewMonth += dir;
+    if (calViewMonth > 11) { calViewMonth = 0; calViewYear++; }
+    if (calViewMonth < 0)  { calViewMonth = 11; calViewYear--; }
+    renderCalendar();
+  }
+
+  function openCalendar() {
+    calViewYear = 2026; calViewMonth = 4;
+    renderCalendar();
+    document.getElementById('calOverlay').classList.add('active');
+  }
+
+  /* ── COUNTDOWN TIMER ── */
+  let timerInterval = null;
+
+  function pad(n) { return String(n).padStart(2,'0'); }
+
+  function updateTimer() {
+    const target = new Date(2026, 4, 8, 16, 30, 0); // 8 May 2026 16:30
+    const now    = new Date();
+    const diff   = target - now;
+
+    if (diff <= 0) {
+      document.getElementById('timerDone').style.display  = 'block';
+      document.getElementById('timerUnits').style.display = 'none';
+      return;
+    }
+
+    const days  = Math.floor(diff / (1000*60*60*24));
+    const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+    const mins  = Math.floor((diff % (1000*60*60)) / (1000*60));
+    const secs  = Math.floor((diff % (1000*60)) / 1000);
+
+    const secEl = document.getElementById('tSecs');
+    secEl.classList.add('flash');
+    setTimeout(() => secEl.classList.remove('flash'), 200);
+
+    document.getElementById('tDays').textContent  = pad(days);
+    document.getElementById('tHours').textContent = pad(hours);
+    document.getElementById('tMins').textContent  = pad(mins);
+    document.getElementById('tSecs').textContent  = pad(secs);
+  }
+
+  function openTimer() {
+    updateTimer();
+    document.getElementById('timerOverlay').classList.add('active');
+    timerInterval = setInterval(updateTimer, 1000);
+  }
+
+  /* ── GENERIC MODAL CLOSE ── */
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+    if (id === 'timerOverlay' && timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+  }
+
+  function closeOnBg(e, id) {
+    if (e.target === document.getElementById(id)) closeModal(id);
+  }
+
+
+
+  /* ── TAP LIGHTNING EFFECT ── */
+  function tapLight(el) {
+    // Remove and re-add class to retrigger animation
+    el.classList.remove('lit');
+    void el.offsetWidth; // reflow
+    el.classList.add('lit');
+
+    // Drop a ripple at center
+    const ripple = document.createElement('span');
+    ripple.className = 'tap-ripple';
+    const rect = el.getBoundingClientRect();
+    ripple.style.left = (el.offsetWidth / 2 - 4) + 'px';
+    ripple.style.top  = (el.offsetHeight / 2 - 4) + 'px';
+    el.appendChild(ripple);
+
+    setTimeout(() => {
+      el.classList.remove('lit');
+      ripple.remove();
+    }, 580);
+  }
+
 </script>
 
 
@@ -803,6 +1261,54 @@ html, body {
     <a class="profile-contact" id="profileContact" href="#">
       <span>📞</span><span id="profileNumber"></span>
     </a>
+  </div>
+</div>
+
+<!-- ── CALENDAR MODAL ── -->
+<div class="modal-overlay" id="calOverlay" onclick="closeOnBg(event,'calOverlay')">
+  <div class="cal-card">
+    <button class="modal-close" onclick="closeModal('calOverlay')">✕</button>
+    <div class="cal-header">
+      <button class="cal-nav" onclick="calNav(-1)">&#8249;</button>
+      <div class="cal-month-label" id="calMonthLabel"></div>
+      <button class="cal-nav" onclick="calNav(1)">&#8250;</button>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div class="cal-legend">
+      <div class="cal-legend-dot"></div>
+      <span>Match Day — 8 May 2026, 4:30 PM</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── TIMER MODAL ── -->
+<div class="modal-overlay" id="timerOverlay" onclick="closeOnBg(event,'timerOverlay')">
+  <div class="timer-card">
+    <button class="modal-close" onclick="closeModal('timerOverlay')">✕</button>
+    <div class="timer-title">⏱ &nbsp; Kick-off Countdown</div>
+    <div class="timer-done" id="timerDone">⚽ Match Day!</div>
+    <div class="timer-units" id="timerUnits">
+      <div class="timer-unit">
+        <div class="timer-num" id="tDays">00</div>
+        <div class="timer-lbl">Days</div>
+      </div>
+      <div class="timer-sep">:</div>
+      <div class="timer-unit">
+        <div class="timer-num" id="tHours">00</div>
+        <div class="timer-lbl">Hours</div>
+      </div>
+      <div class="timer-sep">:</div>
+      <div class="timer-unit">
+        <div class="timer-num" id="tMins">00</div>
+        <div class="timer-lbl">Mins</div>
+      </div>
+      <div class="timer-sep">:</div>
+      <div class="timer-unit">
+        <div class="timer-num" id="tSecs">00</div>
+        <div class="timer-lbl">Secs</div>
+      </div>
+    </div>
+    <div class="timer-footer">Until kick-off at <span>Arena Seven · 4:30 PM</span></div>
   </div>
 </div>
 </body>
