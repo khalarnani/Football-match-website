@@ -1,0 +1,196 @@
+import { useEffect, useState } from "react";
+
+export default function PsychFootballLogo() {
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => { setLoaded(true); }, []);
+
+  return (
+    <div style={{
+      minHeight: '100vh',
+      background: '#050a05',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: '28px',
+      padding: '40px 20px',
+    }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@600;700&display=swap');
+        @keyframes shieldGlow {
+          0%,100% { filter: drop-shadow(0 0 18px rgba(0,230,118,0.55)) drop-shadow(0 0 45px rgba(0,230,118,0.2)); }
+          50%      { filter: drop-shadow(0 0 32px rgba(0,230,118,0.9)) drop-shadow(0 0 70px rgba(0,230,118,0.38)); }
+        }
+        @keyframes psiFloat {
+          0%,100% { transform: translateY(0px) scale(1); }
+          50%      { transform: translateY(-5px) scale(1.04); }
+        }
+        @keyframes ballPulse {
+          0%,100% { transform: scale(1); }
+          50%      { transform: scale(1.07); }
+        }
+        @keyframes ringRotate {
+          from { transform: rotate(0deg); }
+          to   { transform: rotate(360deg); }
+        }
+        @keyframes fadeUp {
+          from { opacity:0; transform:translateY(24px); }
+          to   { opacity:1; transform:translateY(0); }
+        }
+        .wrap       { animation: fadeUp 0.7s ease both 0.1s; opacity:0; animation-fill-mode:forwards; }
+        .shield-svg { animation: shieldGlow 3s ease-in-out infinite; }
+        .psi        { animation: psiFloat 3s ease-in-out infinite; transform-origin: 200px 125px; }
+        .ball       { animation: ballPulse 2.5s ease-in-out infinite; transform-origin: 200px 268px; }
+        .ring       { animation: ringRotate 22s linear infinite; transform-origin: 200px 205px; }
+        .badge {
+          background: rgba(0,230,118,0.07);
+          border: 1px solid rgba(0,230,118,0.28);
+          border-radius: 4px;
+          padding: 9px 22px;
+          color: rgba(0,230,118,0.75);
+          font-family: 'Oswald', sans-serif;
+          font-size: 12px;
+          letter-spacing: 4px;
+          text-transform: uppercase;
+          animation: fadeUp 0.7s ease both 0.55s;
+          opacity: 0;
+          animation-fill-mode: forwards;
+        }
+      `}</style>
+
+      <div className="wrap" style={{ opacity: loaded ? undefined : 0 }}>
+        <svg className="shield-svg" width="320" height="370" viewBox="0 0 400 445" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="sg" x1="0%" y1="0%" x2="110%" y2="110%">
+              <stop offset="0%" stopColor="#1b4d1d"/><stop offset="55%" stopColor="#0c2c0d"/><stop offset="100%" stopColor="#050f05"/>
+            </linearGradient>
+            <linearGradient id="ag" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#00e676"/><stop offset="100%" stopColor="#aeea00"/>
+            </linearGradient>
+            <linearGradient id="gg" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#ffe066"/><stop offset="100%" stopColor="#ffa000"/>
+            </linearGradient>
+            <linearGradient id="ig" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#102e12"/><stop offset="100%" stopColor="#050e05"/>
+            </linearGradient>
+            <linearGradient id="bannerG" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#00c853"/><stop offset="50%" stopColor="#aeea00"/><stop offset="100%" stopColor="#00c853"/>
+            </linearGradient>
+            <filter id="glow" x="-35%" y="-35%" width="170%" height="170%">
+              <feGaussianBlur stdDeviation="4" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <filter id="sglow" x="-55%" y="-55%" width="210%" height="210%">
+              <feGaussianBlur stdDeviation="8" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <filter id="tglow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="3" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <clipPath id="sc">
+              <path d="M200 24 L360 82 L360 222 C360 312 200 398 200 398 C200 398 40 312 40 222 L40 82 Z"/>
+            </clipPath>
+          </defs>
+
+          {/* Gold outer glow */}
+          <path d="M200 16 L368 76 L368 224 C368 320 200 412 200 412 C200 412 32 320 32 224 L32 76 Z"
+            fill="none" stroke="url(#gg)" strokeWidth="3.5" filter="url(#glow)" opacity="0.85"/>
+
+          {/* Shield body */}
+          <path d="M200 24 L360 82 L360 222 C360 312 200 398 200 398 C200 398 40 312 40 222 L40 82 Z"
+            fill="url(#sg)"/>
+
+          {/* Pitch stripes */}
+          <g clipPath="url(#sc)" opacity="0.28">
+            {Array.from({length:10},(_,i)=>(
+              <rect key={i} x={40} y={24+i*40} width={320} height={20}
+                fill={i%2===0?"#1e6823":"#155018"}/>
+            ))}
+          </g>
+
+          {/* Pitch markings */}
+          <g clipPath="url(#sc)" stroke="rgba(255,255,255,0.1)" strokeWidth="1.8" fill="none">
+            <line x1="40" y1="210" x2="360" y2="210"/>
+            <circle cx="200" cy="210" r="58"/>
+            <circle cx="200" cy="210" r="5" fill="rgba(255,255,255,0.1)" stroke="none"/>
+            <rect x="130" y="24" width="140" height="70"/>
+            <rect x="130" y="328" width="140" height="70"/>
+          </g>
+
+          {/* Rotating orbit */}
+          <circle className="ring" cx="200" cy="205" r="108"
+            fill="none" stroke="rgba(0,230,118,0.13)" strokeWidth="1.5" strokeDasharray="5 9"/>
+
+          {/* Inner panel */}
+          <path d="M200 56 L336 106 L336 218 C336 294 200 370 200 370 C200 370 64 294 64 218 L64 106 Z"
+            fill="url(#ig)" opacity="0.65"/>
+
+          {/* Cross lines */}
+          <g clipPath="url(#sc)" stroke="rgba(0,230,118,0.18)" strokeWidth="1.2" fill="none">
+            <line x1="40" y1="205" x2="360" y2="205"/>
+            <line x1="200" y1="56"  x2="200" y2="398"/>
+          </g>
+
+          {/* PSI Ψ */}
+          <g className="psi" filter="url(#sglow)">
+            <rect x="194" y="96" width="12" height="68" rx="6" fill="url(#ag)"/>
+            <path d="M145 120 C145 82 255 82 255 120"
+              fill="none" stroke="url(#ag)" strokeWidth="10" strokeLinecap="round"/>
+            <line x1="145" y1="120" x2="145" y2="152" stroke="url(#ag)" strokeWidth="10" strokeLinecap="round"/>
+            <line x1="255" y1="120" x2="255" y2="152" stroke="url(#ag)" strokeWidth="10" strokeLinecap="round"/>
+            <rect x="172" y="158" width="56" height="8" rx="4" fill="url(#ag)" opacity="0.7"/>
+          </g>
+
+          {/* Football */}
+          <g className="ball" filter="url(#glow)">
+            <circle cx="200" cy="268" r="46" fill="white" opacity="0.95"/>
+            <path d="M200 230 L213 243 L209 259 L191 259 L187 243 Z" fill="#0b2a0c"/>
+            <path d="M228 248 L243 254 L243 270 L231 278 L220 269 L223 254 Z" fill="#0b2a0c"/>
+            <path d="M172 248 L157 254 L157 270 L169 278 L180 269 L177 254 Z" fill="#0b2a0c"/>
+            <path d="M215 277 L222 269 L231 278 L225 292 L207 294 Z" fill="#0b2a0c"/>
+            <path d="M185 277 L178 269 L169 278 L175 292 L193 294 Z" fill="#0b2a0c"/>
+            <circle cx="200" cy="268" r="46" fill="none" stroke="url(#ag)" strokeWidth="2" opacity="0.55"/>
+          </g>
+
+          {/* Bottom banner */}
+          <path d="M60 318 L340 318 L340 362 C302 386 254 398 200 398 C146 398 98 386 60 362 Z"
+            fill="url(#bannerG)"/>
+          <line x1="60" y1="318" x2="340" y2="318" stroke="rgba(0,0,0,0.3)" strokeWidth="2"/>
+          <text x="200" y="352" textAnchor="middle"
+            fontFamily="Anton, sans-serif" fontSize="30" letterSpacing="7" fill="#051a06">
+            PSYCH
+          </text>
+
+          {/* Top ribbon */}
+          <path d="M86 63 Q200 50 314 63 L314 82 Q200 95 86 82 Z"
+            fill="rgba(0,0,0,0.6)" stroke="rgba(0,230,118,0.38)" strokeWidth="1"/>
+          <text x="200" y="76" textAnchor="middle"
+            fontFamily="Oswald, sans-serif" fontSize="11.5" fontWeight="700"
+            fill="rgba(0,230,118,0.92)" letterSpacing="3.5" filter="url(#tglow)">
+            DEPT. OF PSYCHOLOGY
+          </text>
+
+          {/* Gold stars */}
+          {[[88,172],[312,172]].map(([x,y],i)=>(
+            <g key={i} filter="url(#glow)">
+              <polygon
+                points={`${x},${y-10} ${x+3.5},${y-3.5} ${x+10},${y-3.5} ${x+5},${y+2} ${x+7},${y+9} ${x},${y+5} ${x-7},${y+9} ${x-5},${y+2} ${x-10},${y-3.5} ${x-3.5},${y-3.5}`}
+                fill="url(#gg)" opacity="0.82"/>
+            </g>
+          ))}
+
+          {/* Outer accent border */}
+          <path d="M200 24 L360 82 L360 222 C360 312 200 398 200 398 C200 398 40 312 40 222 L40 82 Z"
+            fill="none" stroke="url(#ag)" strokeWidth="1.5" opacity="0.45"/>
+
+          {/* Shield notch top */}
+          <path d="M200 24 L220 24 L220 50 L200 60 L180 50 L180 24 Z"
+            fill="url(#gg)" opacity="0.7"/>
+        </svg>
+      </div>
+
+      <div className="badge">⚽ &nbsp; FC Psychology · Est. 2026 &nbsp; ⚽</div>
+    </div>
+  );
+}
