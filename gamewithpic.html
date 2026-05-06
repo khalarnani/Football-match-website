@@ -439,8 +439,8 @@ html, body {
 .map-btn { display:inline-flex; align-items:center; gap:6px; background:var(--gold); color:var(--dark); font-family:'Oswald',sans-serif; font-size:clamp(10px,2.8vw,13px); font-weight:700; letter-spacing:1.5px; text-transform:uppercase; text-decoration:none; padding:clamp(8px,2vw,10px) clamp(10px,2.5vw,14px); border-radius:2px; flex-shrink:0; box-shadow:0 0 14px rgba(255,234,0,0.3); -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
 .map-btn:active { transform:scale(0.97); }
 
-.sil { position:relative; width:100%; height:clamp(120px,30vw,170px); overflow:hidden; display:flex; align-items:center; justify-content:center; margin:clamp(4px,1vw,6px) 0 0; }
-.sil svg { width:100%; max-width:480px; height:clamp(110px,28vw,160px); opacity:0.92; }
+.sil { position:relative; width:100%; height:clamp(120px,30vw,170px); overflow:visible; display:flex; align-items:center; justify-content:center; margin:clamp(4px,1vw,6px) 0 0; }
+.sil svg { width:100%; max-width:480px; height:clamp(110px,28vw,160px); opacity:0.92; overflow:visible; }
 .sl,.sr { position:absolute; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; gap:6px; }
 .sl { left:0; padding-left:clamp(10px,2.5vw,20px); }
 .sr { right:0; padding-right:clamp(10px,2.5vw,20px); align-items:flex-end; }
@@ -1002,6 +1002,17 @@ html, body {
   0%   { transform: translate(-50%,-50%) scale(0); opacity: 0.9; }
   100% { transform: translate(-50%,-50%) scale(2.8); opacity: 0; }
 }
+/* ── SILHOUETTE NAME POP-UP ── */
+.sil svg { overflow: visible; }
+@keyframes popIn {
+  0%   { opacity: 0; transform: translateY(6px); }
+  60%  { opacity: 1; transform: translateY(-2px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes popOut {
+  0%   { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(4px); }
+}
 
 </style>
 </head>
@@ -1262,6 +1273,26 @@ html, body {
           <!-- Name label below Nahian -->
           <text x="268" y="122" text-anchor="middle" font-family="'Oswald',sans-serif" font-size="11.5" font-weight="700" letter-spacing="2.5" fill="#aeea00" opacity="0.9">NAHIAN</text>
 
+          <!-- ── RAHAT NAME POP-UP (hidden by default) ── -->
+          <g id="popRahat" opacity="0" style="pointer-events:none;">
+            <rect x="28" y="-22" width="88" height="26" rx="4" fill="rgba(0,0,0,0.88)" stroke="#00e676" stroke-width="1.5"/>
+            <polygon points="72,6 66,4 78,4" fill="rgba(0,0,0,0.88)"/>
+            <text x="72" y="-9" text-anchor="middle" font-family="'Anton',sans-serif" font-size="8" letter-spacing="1" fill="#00e676">RAHAT ANJUM</text>
+            <text x="72" y="1" text-anchor="middle" font-family="'Oswald',sans-serif" font-size="6" letter-spacing="0.8" fill="rgba(174,234,0,0.9)">⚽ Player</text>
+          </g>
+
+          <!-- ── NAHIAN NAME POP-UP (hidden by default) ── -->
+          <g id="popNahian" opacity="0" style="pointer-events:none;">
+            <rect x="220" y="-22" width="96" height="26" rx="4" fill="rgba(0,0,0,0.88)" stroke="#aeea00" stroke-width="1.5"/>
+            <polygon points="268,6 262,4 274,4" fill="rgba(0,0,0,0.88)"/>
+            <text x="268" y="-9" text-anchor="middle" font-family="'Anton',sans-serif" font-size="8" letter-spacing="1" fill="#aeea00">NAHIAN SARKAR</text>
+            <text x="268" y="1" text-anchor="middle" font-family="'Oswald',sans-serif" font-size="6" letter-spacing="0.8" fill="rgba(0,230,118,0.9)">⚽ Player</text>
+          </g>
+
+          <!-- ── INVISIBLE TAP HIT AREAS ── -->
+          <rect x="44" y="0" width="56" height="100" rx="4" fill="transparent" style="cursor:pointer;" onclick="silTap('popRahat')"/>
+          <rect x="240" y="0" width="56" height="100" rx="4" fill="transparent" style="cursor:pointer;" onclick="silTap('popNahian')"/>
+
           <!-- Speed lines right -->
           <g opacity="0.35">
             <line x1="298" y1="52" x2="336" y2="52" stroke="#aeea00" stroke-width="2" stroke-linecap="round">
@@ -1489,6 +1520,22 @@ html, body {
   }
 
 
+
+  /* ── SILHOUETTE NAME POP-UP ── */
+  const silTimers = {};
+  function silTap(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    clearTimeout(silTimers[id]);
+    el.style.animation = 'none';
+    el.style.opacity   = '0';
+    void el.offsetWidth;
+    el.style.animation = 'popIn 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards';
+    silTimers[id] = setTimeout(() => {
+      el.style.animation = 'popOut 0.3s ease forwards';
+    }, 2200);
+  }
+  window.silTap = silTap;
 
   /* ── TAP LIGHTNING EFFECT ── */
   function tapLight(el) {
