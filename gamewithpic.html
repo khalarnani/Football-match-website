@@ -929,79 +929,97 @@ html, body {
 .modal-close:active { color: #00e676; }
 
 
-/* ── VENUE MINI-MAP CARD ── */
-.venue-card { padding-top: clamp(6px,1.5vw,10px) !important; }
-
-.venue-mini-map {
+/* ── VENUE 3D FLIP CARD ── */
+.venue-flip-wrap {
+  perspective: 600px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  padding: 0 !important;
+  overflow: visible !important;
   position: relative;
-  width: clamp(42px,11vw,54px);
-  height: clamp(30px,8vw,38px);
-  margin: 0 auto 4px;
 }
-
-/* Tiny pitch grid */
-.vmm-grid {
+.venue-flipper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: clamp(110px,28vw,140px);
+  transform-style: preserve-3d;
+  transition: transform 0.65s cubic-bezier(0.4, 0.2, 0.2, 1);
+}
+.venue-flip-wrap.flipped .venue-flipper {
+  transform: rotateY(180deg);
+}
+.venue-face {
   position: absolute;
   inset: 0;
-  border: 1px solid rgba(0,230,118,0.3);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(8px,2vw,12px) clamp(5px,1.5vw,8px);
   border-radius: 2px;
-  overflow: hidden;
 }
-.vmm-line {
-  position: absolute;
-  background: rgba(0,230,118,0.2);
+.venue-front {
+  background: rgba(0,0,0,0.45);
 }
-.vmm-h {
-  top: 50%; left: 0; right: 0;
-  height: 1px; transform: translateY(-50%);
+.venue-back {
+  background: linear-gradient(160deg, rgba(0,40,20,0.92), rgba(0,20,10,0.95));
+  border: 1px solid rgba(0,230,118,0.4);
+  transform: rotateY(180deg);
+  gap: 3px;
 }
-.vmm-v {
-  left: 50%; top: 0; bottom: 0;
-  width: 1px; transform: translateX(-50%);
+.vf-icon {
+  font-size: clamp(20px,5vw,26px);
+  display: block;
+  margin-bottom: 3px;
+  animation: vfIconPulse 2.8s ease-in-out infinite;
+  animation-delay: 0.4s;
+  transform-origin: center;
 }
-.vmm-circle {
-  position: absolute;
-  top: 50%; left: 50%;
-  width: clamp(10px,3vw,14px);
-  height: clamp(10px,3vw,14px);
-  border: 1px solid rgba(0,230,118,0.25);
-  border-radius: 50%;
-  transform: translate(-50%,-50%);
+@keyframes vfIconPulse {
+  0%,100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0px rgba(0,230,118,0));
+  }
+  50% {
+    transform: scale(1.22);
+    filter: drop-shadow(0 0 8px rgba(0,230,118,0.75));
+  }
 }
-
-/* Pin + radar ping */
-.vmm-pin-wrap {
-  position: absolute;
-  top: 18%; right: 20%;
-  display: flex; align-items: center; justify-content: center;
+.vb-title {
+  font-family: 'Anton', sans-serif;
+  font-size: clamp(11px,2.8vw,14px);
+  color: #00e676;
+  letter-spacing: 1px;
+  text-align: center;
+  line-height: 1.1;
 }
-.vmm-pin {
-  font-size: clamp(12px,3.2vw,16px);
-  line-height: 1;
-  position: relative;
-  z-index: 2;
-  filter: drop-shadow(0 0 4px rgba(255,220,0,0.8));
-  animation: pinBob 2s ease-in-out infinite;
+.vb-addr {
+  font-size: clamp(8px,2vw,10px);
+  color: rgba(255,255,255,0.55);
+  text-align: center;
+  letter-spacing: 0.5px;
+  line-height: 1.4;
 }
-@keyframes pinBob {
-  0%,100% { transform: translateY(0); }
-  50%      { transform: translateY(-3px); }
+.vb-btn {
+  margin-top: 5px;
+  background: #00e676;
+  color: #000;
+  font-family: 'Oswald', sans-serif;
+  font-size: clamp(8px,2.2vw,11px);
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: clamp(4px,1vw,6px) clamp(8px,2vw,12px);
+  border-radius: 3px;
+  text-decoration: none;
+  display: inline-block;
+  transition: background 0.2s, transform 0.15s;
+  white-space: nowrap;
 }
-.vmm-ping {
-  position: absolute;
-  width: clamp(18px,5vw,24px);
-  height: clamp(18px,5vw,24px);
-  border-radius: 50%;
-  border: 1.5px solid rgba(0,230,118,0.7);
-  animation: radarPing 2s ease-out infinite;
-  top: 50%; left: 50%;
-  transform: translate(-50%,-50%) scale(0);
-}
-.vmm-ping2 { animation-delay: 1s; }
-@keyframes radarPing {
-  0%   { transform: translate(-50%,-50%) scale(0); opacity: 0.9; }
-  100% { transform: translate(-50%,-50%) scale(2.8); opacity: 0; }
-}
+.vb-btn:active { background: #aeea00; transform: scale(0.96); }
 /* ── SILHOUETTE NAME POP-UP ── */
 .sil svg { overflow: visible; }
 @keyframes popIn {
@@ -1121,28 +1139,30 @@ html, body {
           <div class="ib-val">4:30<br>PM</div>
           <div class="ib-sub">Tap for timer ▾</div>
         </div>
-        <div class="ib tappable-ib venue-card" onclick="tapLight(this); window.open('https://maps.app.goo.gl/1kA64Df2yQ2MuD3F8','_blank')" title="Open in Maps">
-          <span class="spark spark-tl"></span>
-          <span class="spark spark-tr"></span>
-          <span class="spark spark-bl"></span>
-          <span class="spark spark-br"></span>
-          <!-- Mini pitch grid -->
-          <div class="venue-mini-map">
-            <div class="vmm-grid">
-              <div class="vmm-line vmm-h"></div>
-              <div class="vmm-line vmm-v"></div>
-              <div class="vmm-circle"></div>
+        <div class="ib venue-flip-wrap" onclick="toggleVenueFlip(this)">
+          <div class="venue-flipper" id="venueFlipper">
+
+            <!-- FRONT -->
+            <div class="venue-face venue-front">
+              <span class="spark spark-tl"></span>
+              <span class="spark spark-tr"></span>
+              <span class="spark spark-bl"></span>
+              <span class="spark spark-br"></span>
+              <span class="vf-icon">🏟️</span>
+              <div class="ib-lbl">Venue</div>
+              <div class="ib-val" style="font-size:clamp(12px,3.2vw,17px);">Arena<br>Seven</div>
+              <div class="ib-sub">Tap to flip ↻</div>
             </div>
-            <!-- Radar ping on the pin -->
-            <div class="vmm-pin-wrap">
-              <div class="vmm-ping"></div>
-              <div class="vmm-ping vmm-ping2"></div>
-              <span class="vmm-pin">📍</span>
+
+            <!-- BACK -->
+            <div class="venue-face venue-back">
+              <div class="vb-title">📍 Arena Seven</div>
+              <div class="vb-addr">PFH6+Q6, Dhaka<br>Bangladesh</div>
+              <a class="vb-btn" href="https://maps.app.goo.gl/1kA64Df2yQ2MuD3F8" target="_blank" rel="noopener" onclick="event.stopPropagation()">Get Directions 🗺️</a>
+              <div class="ib-sub" style="margin-top:4px;">Tap to flip back ↺</div>
             </div>
+
           </div>
-          <div class="ib-lbl">Venue</div>
-          <div class="ib-val" style="font-size:clamp(12px,3.2vw,17px);">Arena<br>Seven</div>
-          <div class="ib-sub">Tap for map ▾</div>
         </div>
       </div>
 
@@ -1520,6 +1540,12 @@ html, body {
   }
 
 
+
+  /* ── VENUE 3D FLIP ── */
+  function toggleVenueFlip(el) {
+    el.classList.toggle('flipped');
+  }
+  window.toggleVenueFlip = toggleVenueFlip;
 
   /* ── SILHOUETTE NAME POP-UP ── */
   const silTimers = {};
