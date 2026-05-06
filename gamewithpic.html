@@ -316,12 +316,117 @@ html, body {
 .invite p b { color:var(--green); font-weight:700; }
 
 .info-strip { display:flex; gap:0; width:calc(100% - var(--pad)*2); margin:0 auto clamp(10px,2.5vw,16px); }
-.ib { flex:1; background:rgba(0,0,0,0.45); border:1px solid rgba(0,230,118,0.2); border-right:none; padding:clamp(10px,2.5vw,14px) clamp(5px,1.5vw,10px); text-align:center; position:relative; overflow:hidden; }
+.ib { flex:1; background:rgba(0,0,0,0.45); border:1px solid rgba(0,230,118,0.2); border-right:none; padding:clamp(10px,2.5vw,14px) clamp(5px,1.5vw,10px); text-align:center; position:relative; overflow:hidden; transition: transform 0.22s cubic-bezier(.34,1.56,.64,1), box-shadow 0.22s ease, background 0.22s ease, border-color 0.22s ease; }
 .ib:last-child { border-right:1px solid rgba(0,230,118,0.2); }
-.ib-ico { font-size:clamp(18px,4.5vw,24px); display:block; margin-bottom:4px; }
+
+/* Hover / focus glow expand */
+.ib:hover, .ib:focus-within {
+  transform: scale(1.045) translateY(-2px);
+  background: rgba(0,230,118,0.07);
+  border-color: rgba(0,230,118,0.55) !important;
+  box-shadow: 0 0 18px rgba(0,230,118,0.28), 0 4px 14px rgba(0,0,0,0.5);
+  z-index: 2;
+}
+
+/* Icon pulse – idle soft breathe */
+.ib-ico {
+  font-size:clamp(18px,4.5vw,24px);
+  display:block;
+  margin-bottom:4px;
+  animation: iconBreathe 2.8s ease-in-out infinite;
+  transform-origin: center;
+  transition: transform 0.18s ease, filter 0.18s ease;
+}
+@keyframes iconBreathe {
+  0%,100% { transform: scale(1);    filter: drop-shadow(0 0 0px rgba(0,230,118,0)); }
+  50%      { transform: scale(1.18); filter: drop-shadow(0 0 7px rgba(0,230,118,0.7)); }
+}
+/* On hover – icon pops bigger and glows more */
+.ib:hover .ib-ico, .ib:focus-within .ib-ico {
+  animation: iconHoverPulse 0.6s ease-in-out infinite alternate;
+}
+@keyframes iconHoverPulse {
+  from { transform: scale(1.15); filter: drop-shadow(0 0 6px rgba(0,230,118,0.5)); }
+  to   { transform: scale(1.28); filter: drop-shadow(0 0 14px rgba(174,234,0,0.9)); }
+}
+
+/* Stagger breathe so icons don't all pulse together */
+.ib:nth-child(1) .ib-ico { animation-delay: 0s; }
+.ib:nth-child(2) .ib-ico { animation-delay: 0.9s; }
+.ib:nth-child(3) .ib-ico { animation-delay: 1.8s; }
+
 .ib-lbl { font-size:clamp(8px,2vw,10px); letter-spacing:clamp(2px,0.8vw,4px); color:var(--green); text-transform:uppercase; margin-bottom:3px; }
 .ib-val { font-family:'Anton',sans-serif; font-size:clamp(16px,4.5vw,24px); color:#fff; line-height:1.05; }
 .ib-sub { font-size:clamp(9px,2.2vw,11px); color:rgba(255,255,255,0.45); margin-top:2px; }
+
+/* ── PROGRESS TICKER ── */
+.ticker-wrap {
+  width: calc(100% - var(--pad)*2);
+  margin: 0 auto clamp(10px,2.5vw,14px);
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(174,234,0,0.25);
+  border-left: 3px solid var(--lime);
+  overflow: hidden;
+  position: relative;
+  height: clamp(28px,7vw,36px);
+  display: flex;
+  align-items: center;
+}
+.ticker-wrap::before {
+  content: '⚽';
+  position: absolute;
+  left: 8px;
+  z-index: 2;
+  font-size: clamp(11px,2.8vw,14px);
+  animation: tickerBall 1s ease-in-out infinite alternate;
+}
+@keyframes tickerBall {
+  from { transform: rotate(-15deg) scale(0.9); }
+  to   { transform: rotate(15deg)  scale(1.1); }
+}
+.ticker-fade-l, .ticker-fade-r {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 28px;
+  z-index: 2;
+  pointer-events: none;
+}
+.ticker-fade-l { left: 0;  background: linear-gradient(90deg, rgba(0,0,0,0.6), transparent); }
+.ticker-fade-r { right: 0; background: linear-gradient(270deg, rgba(0,0,0,0.6), transparent); }
+.ticker-track {
+  display: flex;
+  white-space: nowrap;
+  animation: tickerScroll 28s linear infinite;
+  padding-left: 28px;
+}
+.ticker-track:hover { animation-play-state: paused; }
+@keyframes tickerScroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.ticker-item {
+  font-family: 'Oswald', sans-serif;
+  font-size: clamp(10px,2.6vw,13px);
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.75);
+  padding: 0 clamp(18px,4vw,28px);
+  flex-shrink: 0;
+}
+.ticker-item .hi { color: var(--lime); font-weight: 700; }
+.ticker-item .dot {
+  display: inline-block;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--green);
+  margin: 0 10px;
+  vertical-align: middle;
+  animation: dotBlink 1.2s ease-in-out infinite;
+}
+@keyframes dotBlink {
+  0%,100% { opacity: 0.3; } 50% { opacity: 1; }
+}
 
 .loc { width:calc(100% - var(--pad)*2); margin:0 auto clamp(12px,3vw,18px); background:linear-gradient(135deg,rgba(0,0,0,0.6),rgba(0,40,10,0.5)); border:1px solid rgba(0,230,118,0.3); padding:clamp(10px,2.5vw,14px) clamp(12px,3vw,18px); display:flex; align-items:center; gap:clamp(8px,2vw,14px); flex-wrap:wrap; position:relative; overflow:hidden; }
 .loc::before { content:''; position:absolute; top:0; left:0; width:4px; height:100%; background:linear-gradient(to bottom,var(--gold),var(--green)); }
@@ -439,13 +544,74 @@ html, body {
 }
 /* Make chips tappable */
 .chip {
-  cursor:pointer;
-  transition:background 0.2s, border-color 0.2s, transform 0.15s;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: transform 0.22s cubic-bezier(.34,1.56,.64,1), border-color 0.22s ease, background 0.22s ease, box-shadow 0.22s ease, color 0.22s ease;
+  animation: chipBreathe 3s ease-in-out infinite;
 }
+
+/* Stagger each chip's breathe so they feel alive independently */
+.chip:nth-child(1) { animation-delay: 0s; }
+.chip:nth-child(2) { animation-delay: 0.6s; }
+.chip:nth-child(3) { animation-delay: 1.2s; }
+.chip:nth-child(4) { animation-delay: 1.8s; }
+.chip:nth-child(5) { animation-delay: 2.4s; }
+
+@keyframes chipBreathe {
+  0%, 100% {
+    border-color: rgba(0,230,118,0.25);
+    box-shadow: 0 0 0px rgba(0,230,118,0);
+    color: #d4f5dd;
+  }
+  50% {
+    border-color: rgba(0,230,118,0.55);
+    box-shadow: 0 0 10px rgba(0,230,118,0.2), inset 0 0 8px rgba(0,230,118,0.06);
+    color: #fff;
+  }
+}
+
+/* Sweep shimmer layer — slides across on idle */
+.chip::before {
+  content: '';
+  position: absolute;
+  top: -50%; left: -80%;
+  width: 45%; height: 200%;
+  background: linear-gradient(105deg, transparent, rgba(0,230,118,0.12), rgba(174,234,0,0.08), transparent);
+  transform: skewX(-18deg);
+  pointer-events: none;
+  animation: chipShimmer 3s ease-in-out infinite;
+}
+.chip:nth-child(1)::before { animation-delay: 0s; }
+.chip:nth-child(2)::before { animation-delay: 0.6s; }
+.chip:nth-child(3)::before { animation-delay: 1.2s; }
+.chip:nth-child(4)::before { animation-delay: 1.8s; }
+.chip:nth-child(5)::before { animation-delay: 2.4s; }
+@keyframes chipShimmer {
+  0%   { left: -80%; opacity: 0; }
+  30%  { opacity: 1; }
+  60%  { left: 140%; opacity: 0; }
+  100% { left: 140%; opacity: 0; }
+}
+
+/* Hover / tap — spring expand + full glow */
 .chip:hover, .chip:active {
-  background:rgba(0,230,118,0.15);
-  border-color:rgba(0,230,118,0.6);
-  transform:scale(1.04);
+  transform: scale(1.1) translateY(-2px);
+  background: rgba(0,230,118,0.12);
+  border-color: rgba(174,234,0,0.8) !important;
+  box-shadow: 0 0 20px rgba(0,230,118,0.4), 0 0 6px rgba(174,234,0,0.3), inset 0 0 12px rgba(0,230,118,0.08);
+  color: #aeea00 !important;
+  animation: none; /* freeze breathe while hovered */
+}
+.chip:hover::before, .chip:active::before {
+  animation: chipShimmerFast 0.5s ease forwards;
+}
+@keyframes chipShimmerFast {
+  0%   { left: -80%; opacity: 0; }
+  20%  { opacity: 1; }
+  100% { left: 140%; opacity: 0; }
 }
 
 
@@ -762,11 +928,94 @@ html, body {
 }
 .modal-close:active { color: #00e676; }
 
+/* ── PARTICLE CANVAS ── */
+#particleCanvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
 
+
+/* ── VENUE MINI-MAP CARD ── */
+.venue-card { padding-top: clamp(6px,1.5vw,10px) !important; }
+
+.venue-mini-map {
+  position: relative;
+  width: clamp(42px,11vw,54px);
+  height: clamp(30px,8vw,38px);
+  margin: 0 auto 4px;
+}
+
+/* Tiny pitch grid */
+.vmm-grid {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(0,230,118,0.3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.vmm-line {
+  position: absolute;
+  background: rgba(0,230,118,0.2);
+}
+.vmm-h {
+  top: 50%; left: 0; right: 0;
+  height: 1px; transform: translateY(-50%);
+}
+.vmm-v {
+  left: 50%; top: 0; bottom: 0;
+  width: 1px; transform: translateX(-50%);
+}
+.vmm-circle {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: clamp(10px,3vw,14px);
+  height: clamp(10px,3vw,14px);
+  border: 1px solid rgba(0,230,118,0.25);
+  border-radius: 50%;
+  transform: translate(-50%,-50%);
+}
+
+/* Pin + radar ping */
+.vmm-pin-wrap {
+  position: absolute;
+  top: 18%; right: 20%;
+  display: flex; align-items: center; justify-content: center;
+}
+.vmm-pin {
+  font-size: clamp(12px,3.2vw,16px);
+  line-height: 1;
+  position: relative;
+  z-index: 2;
+  filter: drop-shadow(0 0 4px rgba(255,220,0,0.8));
+  animation: pinBob 2s ease-in-out infinite;
+}
+@keyframes pinBob {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-3px); }
+}
+.vmm-ping {
+  position: absolute;
+  width: clamp(18px,5vw,24px);
+  height: clamp(18px,5vw,24px);
+  border-radius: 50%;
+  border: 1.5px solid rgba(0,230,118,0.7);
+  animation: radarPing 2s ease-out infinite;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%) scale(0);
+}
+.vmm-ping2 { animation-delay: 1s; }
+@keyframes radarPing {
+  0%   { transform: translate(-50%,-50%) scale(0); opacity: 0.9; }
+  100% { transform: translate(-50%,-50%) scale(2.8); opacity: 0; }
+}
 
 </style>
 </head>
 <body>
+
+<canvas id="particleCanvas"></canvas>
 
 <!-- ══ SPLASH PAGE ══ -->
 <div id="splash">
@@ -871,11 +1120,37 @@ html, body {
           <div class="ib-val">4:30<br>PM</div>
           <div class="ib-sub">Tap for timer ▾</div>
         </div>
-        <div class="ib">
-          <span class="ib-ico">🏟️</span>
+        <div class="ib tappable-ib venue-card" onclick="tapLight(this); window.open('https://maps.app.goo.gl/1kA64Df2yQ2MuD3F8','_blank')" title="Open in Maps">
+          <span class="spark spark-tl"></span>
+          <span class="spark spark-tr"></span>
+          <span class="spark spark-bl"></span>
+          <span class="spark spark-br"></span>
+          <!-- Mini pitch grid -->
+          <div class="venue-mini-map">
+            <div class="vmm-grid">
+              <div class="vmm-line vmm-h"></div>
+              <div class="vmm-line vmm-v"></div>
+              <div class="vmm-circle"></div>
+            </div>
+            <!-- Radar ping on the pin -->
+            <div class="vmm-pin-wrap">
+              <div class="vmm-ping"></div>
+              <div class="vmm-ping vmm-ping2"></div>
+              <span class="vmm-pin">📍</span>
+            </div>
+          </div>
           <div class="ib-lbl">Venue</div>
-          <div class="ib-val">Arena<br>Seven</div>
-          <div class="ib-sub">Dhaka</div>
+          <div class="ib-val" style="font-size:clamp(12px,3.2vw,17px);">Arena<br>Seven</div>
+          <div class="ib-sub">Tap for map ▾</div>
+        </div>
+      </div>
+
+      <!-- ── PROGRESS TICKER ── -->
+      <div class="ticker-wrap">
+        <div class="ticker-fade-l"></div>
+        <div class="ticker-fade-r"></div>
+        <div class="ticker-track" id="tickerTrack">
+          <!-- items injected by JS, doubled for seamless loop -->
         </div>
       </div>
 
@@ -1245,6 +1520,134 @@ html, body {
       ripple.remove();
     }, 580);
   }
+
+  /* ══════════════════════════════
+     DYNAMIC PROGRESS TICKER
+  ══════════════════════════════ */
+  (function buildTicker() {
+    const matchDate = new Date('2026-05-08T16:30:00+06:00');
+    const now       = new Date();
+    const diffMs    = matchDate - now;
+    const diffDays  = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+    let timeMsg;
+    if (diffMs <= 0)       timeMsg = '🔴 Match is LIVE right now!';
+    else if (diffDays === 0) timeMsg = 'TODAY is the big day!';
+    else if (diffDays === 1) timeMsg = 'TOMORROW — get your boots ready!';
+    else                     timeMsg = `Only <span class="hi">${diffDays} days</span> to go!`;
+
+    const items = [
+      `<span class="hi">Psychology Dept</span> Internal Football Match — Battle Within!`,
+      `${timeMsg}`,
+      `Kick-off at <span class="hi">4:30 PM</span> · Arena Seven, Dhaka`,
+      `Boys &amp; Girls both welcome <span class="hi">🎉</span> — bring your energy!`,
+      `Organized by <span class="hi">Sadik · Yeamin · Rahat · Nahian · Niloy</span>`,
+      `Central Field <span class="hi">📍</span> — be there or miss out forever`,
+      `<span class="hi">⚽ Psychology Department</span> Football Match · May 8, 2026`,
+      `Tap the <span class="hi">📅 Date</span> card to add to your calendar`,
+      `Tap the <span class="hi">⏱ Timer</span> card to see the countdown`,
+    ];
+
+    // Build HTML — doubled for seamless infinite scroll
+    const html = [...items, ...items].map(txt =>
+      `<span class="ticker-item"><span class="dot"></span>${txt}</span>`
+    ).join('');
+
+    document.getElementById('tickerTrack').innerHTML = html;
+  })();
+
+  /* ══════════════════════════════
+     PARTICLE CANVAS – floating soccer balls
+  ══════════════════════════════ */
+  (function() {
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+    let W, H, particles = [], mouse = { x: -999, y: -999 };
+    const BALL_EMOJI = '⚽';
+    const COUNT = 22;
+
+    function resize() {
+      W = canvas.width  = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Track pointer / touch
+    window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+    window.addEventListener('touchmove', e => {
+      const t = e.touches[0];
+      mouse.x = t.clientX; mouse.y = t.clientY;
+    }, { passive: true });
+    window.addEventListener('touchend', () => { mouse.x = -999; mouse.y = -999; }, { passive: true });
+
+    function rand(a, b) { return a + Math.random() * (b - a); }
+
+    function makeParticle() {
+      return {
+        x: rand(0, W),
+        y: rand(-H, H),       // start anywhere so page loads populated
+        vx: rand(-0.35, 0.35),
+        vy: rand(0.25, 0.7),  // gentle downward drift
+        size: rand(12, 26),
+        opacity: rand(0.06, 0.22),
+        rot: rand(0, Math.PI * 2),
+        rSpeed: rand(-0.008, 0.008),
+      };
+    }
+
+    for (let i = 0; i < COUNT; i++) particles.push(makeParticle());
+
+    function drawBall(p) {
+      ctx.save();
+      ctx.globalAlpha = p.opacity;
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.font = `${p.size}px serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(BALL_EMOJI, 0, 0);
+      ctx.restore();
+    }
+
+    function loop() {
+      ctx.clearRect(0, 0, W, H);
+
+      particles.forEach(p => {
+        // Mouse/touch repulsion
+        const dx = p.x - mouse.x, dy = p.y - mouse.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 100) {
+          const force = (100 - dist) / 100;
+          p.vx += (dx / dist) * force * 0.6;
+          p.vy += (dy / dist) * force * 0.6;
+        }
+
+        // Speed cap + gentle friction
+        p.vx *= 0.98; p.vy *= 0.98;
+        const spd = Math.sqrt(p.vx*p.vx + p.vy*p.vy);
+        if (spd > 3) { p.vx = (p.vx/spd)*3; p.vy = (p.vy/spd)*3; }
+
+        // Base drift restored gradually
+        p.vy += 0.003;
+
+        p.x += p.vx; p.y += p.vy;
+        p.rot += p.rSpeed;
+
+        // Wrap
+        const m = p.size;
+        if (p.y > H + m) { p.y = -m; p.x = rand(0, W); p.vx = rand(-0.35, 0.35); p.vy = rand(0.25, 0.7); }
+        if (p.x < -m)    p.x = W + m;
+        if (p.x > W + m) p.x = -m;
+
+        drawBall(p);
+      });
+
+      requestAnimationFrame(loop);
+    }
+    loop();
+  })();
+
 
 </script>
 
