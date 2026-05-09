@@ -1119,25 +1119,45 @@ html, body {
       </div>
 
       <div class="info-strip">
-        <div class="ib tappable-ib" id="dateCard" onclick="tapLight(this); openCalendar()" title="View on calendar">
-          <span class="spark spark-tl"></span>
-          <span class="spark spark-tr"></span>
-          <span class="spark spark-bl"></span>
-          <span class="spark spark-br"></span>
-          <span class="ib-ico">📅</span>
-          <div class="ib-lbl">Date</div>
-          <div class="ib-val">8 May<br>2026</div>
-          <div class="ib-sub">Tap to view ▾</div>
+
+        <!-- DATE FLIP CARD -->
+        <div class="ib venue-flip-wrap" onclick="toggleFlip(this)">
+          <div class="venue-flipper">
+            <div class="venue-face venue-front">
+              <span class="spark spark-tl"></span><span class="spark spark-tr"></span>
+              <span class="spark spark-bl"></span><span class="spark spark-br"></span>
+              <span class="vf-icon" style="animation-delay:0s">📅</span>
+              <div class="ib-lbl">Date</div>
+              <div class="ib-val">8 May<br>2026</div>
+              <div class="ib-sub">Tap to flip ↻</div>
+            </div>
+            <div class="venue-face venue-back">
+              <div class="vb-title">📅 Match Day</div>
+              <div class="vb-addr">Friday, 8 May 2026<br>4:30 PM kickoff</div>
+              <a class="vb-btn" onclick="event.stopPropagation(); openCalendar()">Open Calendar 🗓️</a>
+              <div class="ib-sub" style="margin-top:4px;">Tap to flip back ↺</div>
+            </div>
+          </div>
         </div>
-        <div class="ib tappable-ib" id="kickCard" onclick="tapLight(this); openTimer()" title="Countdown to kick-off">
-          <span class="spark spark-tl"></span>
-          <span class="spark spark-tr"></span>
-          <span class="spark spark-bl"></span>
-          <span class="spark spark-br"></span>
-          <span class="ib-ico">⏱</span>
-          <div class="ib-lbl">Kick-off</div>
-          <div class="ib-val">4:30<br>PM</div>
-          <div class="ib-sub">Tap for timer ▾</div>
+
+        <!-- KICK-OFF FLIP CARD -->
+        <div class="ib venue-flip-wrap" onclick="toggleFlip(this)">
+          <div class="venue-flipper">
+            <div class="venue-face venue-front">
+              <span class="spark spark-tl"></span><span class="spark spark-tr"></span>
+              <span class="spark spark-bl"></span><span class="spark spark-br"></span>
+              <span class="vf-icon" style="animation-delay:0.9s">⏱</span>
+              <div class="ib-lbl">Kick-off</div>
+              <div class="ib-val">4:30<br>PM</div>
+              <div class="ib-sub">Tap to flip ↻</div>
+            </div>
+            <div class="venue-face venue-back">
+              <div class="vb-title">⏱ Countdown</div>
+              <div class="vb-addr">Doors open<br>4:00 PM sharp</div>
+              <a class="vb-btn" onclick="event.stopPropagation(); openTimer()">Open Timer ⏳</a>
+              <div class="ib-sub" style="margin-top:4px;">Tap to flip back ↺</div>
+            </div>
+          </div>
         </div>
         <div class="ib venue-flip-wrap" onclick="toggleVenueFlip(this)">
           <div class="venue-flipper" id="venueFlipper">
@@ -1541,10 +1561,11 @@ html, body {
 
 
 
-  /* ── VENUE 3D FLIP ── */
-  function toggleVenueFlip(el) {
-    el.classList.toggle('flipped');
-  }
+  /* ── 3D FLIP CARDS ── */
+  function toggleFlip(el) { el.classList.toggle('flipped'); }
+  window.toggleFlip = toggleFlip;
+
+  function toggleVenueFlip(el) { el.classList.toggle('flipped'); }
   window.toggleVenueFlip = toggleVenueFlip;
 
   /* ── SILHOUETTE NAME POP-UP ── */
