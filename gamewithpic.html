@@ -1236,6 +1236,222 @@ html, body {
   color: #00e676;
 }
 
+/* ── HISTORY BUTTON TINT ── */
+.history-btn {
+  border-color: rgba(0,180,216,0.3) !important;
+  background: rgba(0,30,50,0.45) !important;
+}
+.history-btn .members-btn-icon { color: #00b4d8; }
+.history-btn .members-btn-title { color: #b0e8ff; }
+.history-btn .members-btn-sub { color: rgba(0,180,216,0.5); }
+.history-btn .members-btn-arrow { color: rgba(0,180,216,0.4); }
+.history-btn:active {
+  background: rgba(0,180,216,0.07) !important;
+  border-color: rgba(0,180,216,0.5) !important;
+}
+.history-btn::before { background: linear-gradient(105deg, transparent, rgba(0,180,216,0.1), transparent) !important; }
+
+/* ── FUTURE MATCH TOGGLE PANEL ── */
+.future-toggle-wrap {
+  width: calc(100% - var(--pad)*2);
+  margin: 0 auto clamp(10px,2.5vw,16px);
+}
+.future-toggle-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(0,0,0,0.38);
+  border: 1px solid rgba(174,234,0,0.2);
+  border-radius: 12px;
+  padding: clamp(10px,2.5vw,13px) clamp(12px,3vw,16px);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: background 0.2s, border-color 0.2s, border-radius 0.3s;
+  position: relative;
+  overflow: hidden;
+  color: #d4f5dd;
+}
+.future-toggle-btn:active { background: rgba(174,234,0,0.06); }
+.future-toggle-icon {
+  font-size: clamp(18px,4.5vw,22px);
+  flex-shrink: 0;
+}
+.future-toggle-label {
+  flex: 1;
+  font-family: 'Oswald', sans-serif;
+  font-size: clamp(13px,3.2vw,15px);
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  text-align: left;
+  color: #c8f5d5;
+}
+.future-toggle-arrow {
+  font-size: clamp(18px,4.5vw,22px);
+  color: rgba(174,234,0,0.5);
+  line-height: 1;
+  font-weight: 700;
+  transition: transform 0.28s cubic-bezier(0.34,1.56,0.64,1), color 0.2s;
+  display: inline-block;
+}
+.future-toggle-wrap.open .future-toggle-btn {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-color: rgba(174,234,0,0.38);
+  background: rgba(174,234,0,0.06);
+}
+.future-toggle-wrap.open .future-toggle-arrow {
+  transform: rotate(45deg);
+  color: #aeea00;
+}
+
+/* Panel body */
+.future-panel {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.38s cubic-bezier(0.4,0,0.2,1);
+  background: rgba(0,0,0,0.45);
+  border: 1px solid rgba(174,234,0,0.25);
+  border-top: none;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+.future-toggle-wrap.open .future-panel { max-height: 460px; }
+.future-panel-inner {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.future-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.future-label {
+  font-size: clamp(9px,2.2vw,11px);
+  letter-spacing: 2px;
+  color: rgba(174,234,0,0.6);
+  text-transform: uppercase;
+  font-family: 'Oswald', sans-serif;
+}
+.future-input {
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(174,234,0,0.2);
+  border-radius: 8px;
+  padding: clamp(8px,2vw,11px) clamp(10px,2.5vw,14px);
+  color: #e8f5e9;
+  font-family: 'Oswald', sans-serif;
+  font-size: clamp(13px,3.2vw,15px);
+  letter-spacing: 0.8px;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  color-scheme: dark;
+}
+.future-input:focus {
+  border-color: rgba(174,234,0,0.55);
+  background: rgba(174,234,0,0.05);
+}
+.future-input::placeholder { color: rgba(255,255,255,0.25); }
+.future-save-btn {
+  background: linear-gradient(135deg, #aeea00, #7ecb00);
+  color: #071a08;
+  border: none;
+  border-radius: 10px;
+  padding: clamp(11px,2.8vw,14px);
+  font-family: 'Anton', sans-serif;
+  font-size: clamp(13px,3.2vw,16px);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  width: 100%;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: transform 0.15s, opacity 0.2s;
+  box-shadow: 0 0 20px rgba(174,234,0,0.3);
+  margin-top: 4px;
+}
+.future-save-btn:active { transform: scale(0.97); opacity: 0.88; }
+
+/* ── MATCH HISTORY ENTRIES ── */
+.history-entry {
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(0,230,118,0.15);
+  border-radius: 14px;
+  padding: 14px 16px;
+  animation: playerRowIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+  position: relative;
+  overflow: hidden;
+}
+.history-entry::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+}
+.history-entry.completed::before { background: linear-gradient(to bottom, #00e676, #aeea00); }
+.history-entry.upcoming::before { background: linear-gradient(to bottom, #ffea00, #ff9800); }
+
+.history-entry-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.history-entry-badge {
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-family: 'Oswald', sans-serif;
+}
+.history-entry.completed .history-entry-badge {
+  background: rgba(0,230,118,0.15);
+  color: #00e676;
+  border: 1px solid rgba(0,230,118,0.3);
+}
+.history-entry.upcoming .history-entry-badge {
+  background: rgba(255,234,0,0.12);
+  color: #ffea00;
+  border: 1px solid rgba(255,234,0,0.3);
+}
+.history-entry-date {
+  font-family: 'Anton', sans-serif;
+  font-size: clamp(15px,3.8vw,18px);
+  color: #fff;
+  letter-spacing: 1px;
+}
+.history-entry-venue {
+  font-size: clamp(11px,2.8vw,13px);
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.8px;
+  margin-top: 2px;
+}
+.history-entry-notes {
+  font-size: clamp(10px,2.5vw,12px);
+  color: rgba(174,234,0,0.6);
+  letter-spacing: 0.8px;
+  margin-top: 6px;
+  font-style: italic;
+}
+.history-empty {
+  text-align: center;
+  padding: 30px 20px;
+}
+.history-empty-icon { font-size: 36px; margin-bottom: 10px; }
+.history-empty-text {
+  font-family: 'Oswald', sans-serif;
+  font-size: 15px;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,0.35);
+  text-transform: uppercase;
+}
+
 /* ── I'M COMING BUTTON ── */
 .coming-wrap {
   width: calc(100% - var(--pad)*2);
@@ -1754,10 +1970,10 @@ html, body {
       <span>Match</span>
     </div>
 
-    <div class="splash-date">📅 &nbsp; 8 May 2026 &nbsp; · &nbsp; 4:30 PM</div>
+    <div class="splash-date">✅ &nbsp; Match Played · 8 May 2026</div>
 
     <button class="open-btn" onclick="openPoster()">
-      🏟 &nbsp; Open Poster
+      ⚽ &nbsp; Psych Dept Matches
     </button>
 
     <div class="splash-hint">
@@ -1782,7 +1998,7 @@ html, body {
     <div class="content">
 
       <div class="top-tape">
-        <span>⚽ &nbsp; Match Completed — 8 May 2026 &nbsp; ✅</span>
+        <span>✅ &nbsp; Match Completed · 8 May 2026 · Arena Seven &nbsp; ⚽</span>
       </div>
 
       <div class="dept-row">
@@ -1809,10 +2025,10 @@ html, body {
 
       <div class="invite">
         <p>
-          All students of <b>Psychology Department</b> are warmly invited —
-          <b>boys &amp; girls both</b> welcome! It's not just a match,
-          it's a <b>gathering of our department family</b>. Come cheer, play &amp;
-          make unforgettable memories. Hope to see <b>all of you</b> there! 🎉
+          All students of <b>Psychology Department</b> came together —
+          <b>boys &amp; girls both</b> participated! It wasn't just a match,
+          it was a <b>celebration of our department family</b>. 
+          Thank you to <b>everyone who came out</b> and made it unforgettable! 🎉
         </p>
       </div>
 
@@ -1824,15 +2040,15 @@ html, body {
             <div class="venue-face venue-front">
               <span class="spark spark-tl"></span><span class="spark spark-tr"></span>
               <span class="spark spark-bl"></span><span class="spark spark-br"></span>
-              <span class="vf-icon" style="animation-delay:0s">📅</span>
-              <div class="ib-lbl">Date</div>
+              <span class="vf-icon" style="animation-delay:0s">✅</span>
+              <div class="ib-lbl">Played</div>
               <div class="ib-val">8 May<br>2026</div>
               <div class="ib-sub">Tap to flip ↻</div>
             </div>
             <div class="venue-face venue-back">
               <div class="vb-title">📅 Match Day</div>
-              <div class="vb-addr">Friday, 8 May 2026<br>4:30 PM kickoff</div>
-              <a class="vb-btn" onclick="event.stopPropagation(); openCalendar()">Open Calendar 🗓️</a>
+              <div class="vb-addr">Thursday, 8 May 2026<br>4:30 PM · Completed ✅</div>
+              <a class="vb-btn" onclick="event.stopPropagation(); openCalendar()">View Calendar 🗓️</a>
               <div class="ib-sub" style="margin-top:4px;">Tap to flip back ↺</div>
             </div>
           </div>
@@ -1844,15 +2060,15 @@ html, body {
             <div class="venue-face venue-front">
               <span class="spark spark-tl"></span><span class="spark spark-tr"></span>
               <span class="spark spark-bl"></span><span class="spark spark-br"></span>
-              <span class="vf-icon" style="animation-delay:0.9s">⏱</span>
+              <span class="vf-icon" style="animation-delay:0.9s">🏆</span>
               <div class="ib-lbl">Kick-off</div>
               <div class="ib-val">4:30<br>PM</div>
               <div class="ib-sub">Tap to flip ↻</div>
             </div>
             <div class="venue-face venue-back">
-              <div class="vb-title">⏱ Countdown</div>
-              <div class="vb-addr">Doors open<br>4:00 PM sharp</div>
-              <a class="vb-btn" onclick="event.stopPropagation(); openTimer()">Open Timer ⏳</a>
+              <div class="vb-title">🏆 Full Time</div>
+              <div class="vb-addr">Match completed<br>8 May 2026 ✅</div>
+              <a class="vb-btn" onclick="event.stopPropagation(); openMatchHistory()">Match History 📋</a>
               <div class="ib-sub" style="margin-top:4px;">Tap to flip back ↺</div>
             </div>
           </div>
@@ -2053,30 +2269,16 @@ html, body {
           <div class="chip" onclick="showProfile('niloy')">Ahsun Niloy</div>
         </div>
       </div>
-      <!-- ── I'M COMING BUTTON ── -->
-      <div class="coming-wrap">
-        <!-- Counter display, always visible -->
-        <div class="coming-counter-row" id="comingCounterRow">
-          <div class="coming-counter-avatars" id="comingAvatars"></div>
-          <div class="coming-counter-info">
-            <span class="coming-counter-num" id="comingCount">—</span>
-            <span class="coming-counter-label">people coming</span>
+      <!-- ── MATCH HISTORY BUTTON ── -->
+      <div class="members-btn-wrap">
+        <button class="members-btn history-btn" onclick="openMatchHistory()">
+          <span class="members-btn-icon">📋</span>
+          <div class="members-btn-text-wrap">
+            <span class="members-btn-title">Match History</span>
+            <span class="members-btn-sub">Results &amp; Upcoming Fixtures</span>
           </div>
-        </div>
-
-        <div class="coming-state" id="comingDefault">
-          <button class="coming-btn" onclick="imComing()">
-            <span class="coming-btn-icon">🙋</span>
-            <span class="coming-btn-text">I'm Coming!</span>
-          </button>
-        </div>
-        <div class="coming-state" id="comingConfirmed" style="display:none;">
-          <div class="coming-confirmed">
-            <div class="coming-check">✅</div>
-            <div class="coming-confirmed-text">You're in! See you on the pitch 🎉</div>
-            <button class="coming-undo" onclick="undoComing()">↩ Undo</button>
-          </div>
-        </div>
+          <span class="members-btn-arrow">›</span>
+        </button>
       </div>
 
       <!-- ── MEMBERS BUTTON ── -->
@@ -2091,9 +2293,41 @@ html, body {
         </button>
       </div>
 
+      <!-- ── FUTURE MATCH TOGGLE PANEL ── -->
+      <div class="future-toggle-wrap" id="futureToggleWrap">
+        <button class="future-toggle-btn" onclick="toggleFuturePanel()" id="futureToggleBtn">
+          <span class="future-toggle-icon">📆</span>
+          <span class="future-toggle-label">Schedule Next Match</span>
+          <span class="future-toggle-arrow" id="futureToggleArrow">+</span>
+        </button>
+        <div class="future-panel" id="futurePanel">
+          <div class="future-panel-inner">
+            <div class="future-field-group">
+              <label class="future-label">📅 Match Date</label>
+              <input type="date" class="future-input" id="futureDate" />
+            </div>
+            <div class="future-field-group">
+              <label class="future-label">⏰ Kick-off Time</label>
+              <input type="time" class="future-input" id="futureTime" value="16:30" />
+            </div>
+            <div class="future-field-group">
+              <label class="future-label">📍 Venue</label>
+              <input type="text" class="future-input" id="futureVenue" placeholder="e.g. Arena Seven, Dhaka" />
+            </div>
+            <div class="future-field-group">
+              <label class="future-label">📝 Notes (optional)</label>
+              <input type="text" class="future-input" id="futureNotes" placeholder="e.g. Bring jerseys, registration required" />
+            </div>
+            <button class="future-save-btn" onclick="saveFutureMatch()">
+              ⚽ &nbsp; Add to Match History
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div class="footer-tape">
         <div class="ft">Psych Dept.</div>
-        <div class="fb">⚽ &nbsp; 8 MAY 2026</div>
+        <div class="fb">✅ &nbsp; 8 MAY 2026</div>
         <div class="ft">Arena Seven</div>
       </div>
 
@@ -2520,30 +2754,156 @@ html, body {
   }
 
   /* ══════════════════════════════
-     DYNAMIC PROGRESS TICKER
+     MATCH HISTORY
   ══════════════════════════════ */
+
+  // Pre-loaded match data — 8 May 2026 result + placeholder for future
+  let matchHistory = [
+    {
+      id: 1,
+      date: '2026-05-08',
+      time: '16:30',
+      venue: 'Arena Seven, Dhaka',
+      notes: 'Internal department match. Both boys & girls participated. Great turnout!',
+      status: 'completed'
+    }
+  ];
+
+  // Load any saved future matches from localStorage fallback to sessionStorage
+  try {
+    const saved = localStorage.getItem('psych_match_history');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // Merge: keep base match, add any user-added ones with id > 1
+      const userAdded = parsed.filter(m => m.id > 1);
+      matchHistory = [matchHistory[0], ...userAdded];
+    }
+  } catch(e) {}
+
+  function saveHistory() {
+    try { localStorage.setItem('psych_match_history', JSON.stringify(matchHistory)); } catch(e) {}
+  }
+
+  function formatMatchDate(dateStr, timeStr) {
+    try {
+      const d = new Date(dateStr + 'T' + (timeStr || '00:00'));
+      return d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' })
+        + (timeStr ? ' · ' + d.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' }) : '');
+    } catch(e) { return dateStr; }
+  }
+
+  function renderHistory() {
+    const el = document.getElementById('historyList');
+    const footEl = document.getElementById('historyFooter');
+    const sorted = [...matchHistory].sort((a,b) => new Date(b.date) - new Date(a.date));
+    if (!sorted.length) {
+      el.innerHTML = `<div class="history-empty"><div class="history-empty-icon">📋</div><div class="history-empty-text">No matches recorded yet</div></div>`;
+      footEl.textContent = '';
+      return;
+    }
+    const now = new Date();
+    el.innerHTML = sorted.map((m, i) => {
+      const isUpcoming = new Date(m.date + 'T' + (m.time || '00:00')) > now;
+      const statusClass = isUpcoming ? 'upcoming' : 'completed';
+      const badge = isUpcoming ? '⚡ Upcoming' : '✅ Completed';
+      return `<div class="history-entry ${statusClass}" style="animation-delay:${i*0.06}s;">
+        <div class="history-entry-header">
+          <span class="history-entry-badge">${badge}</span>
+          ${m.id > 1 ? `<button onclick="deleteHistoryEntry(${m.id})" style="background:none;border:none;color:rgba(255,100,100,0.4);font-size:13px;cursor:pointer;padding:2px 6px;border-radius:6px;-webkit-tap-highlight-color:transparent;" title="Remove">✕</button>` : ''}
+        </div>
+        <div class="history-entry-date">${formatMatchDate(m.date, m.time)}</div>
+        <div class="history-entry-venue">📍 ${m.venue || 'Venue TBA'}</div>
+        ${m.notes ? `<div class="history-entry-notes">💬 ${m.notes}</div>` : ''}
+      </div>`;
+    }).join('');
+    const comp = sorted.filter(m => new Date(m.date) <= now).length;
+    const upcoming = sorted.length - comp;
+    footEl.textContent = `${comp} completed · ${upcoming} upcoming`;
+  }
+
+  function openMatchHistory() {
+    renderHistory();
+    document.getElementById('historyOverlay').classList.add('active');
+  }
+  function closeHistory() {
+    document.getElementById('historyOverlay').classList.remove('active');
+  }
+  function closeHistoryOnBg(e) {
+    if (e.target === document.getElementById('historyOverlay')) closeHistory();
+  }
+  function deleteHistoryEntry(id) {
+    matchHistory = matchHistory.filter(m => m.id !== id);
+    saveHistory();
+    renderHistory();
+  }
+  window.openMatchHistory = openMatchHistory;
+  window.closeHistory = closeHistory;
+  window.closeHistoryOnBg = closeHistoryOnBg;
+  window.deleteHistoryEntry = deleteHistoryEntry;
+
+  /* ══════════════════════════════
+     FUTURE MATCH TOGGLE PANEL
+  ══════════════════════════════ */
+  function toggleFuturePanel() {
+    const wrap = document.getElementById('futureToggleWrap');
+    wrap.classList.toggle('open');
+  }
+  window.toggleFuturePanel = toggleFuturePanel;
+
+  function saveFutureMatch() {
+    const dateVal  = document.getElementById('futureDate').value;
+    const timeVal  = document.getElementById('futureTime').value;
+    const venueVal = document.getElementById('futureVenue').value.trim();
+    const notesVal = document.getElementById('futureNotes').value.trim();
+
+    if (!dateVal) {
+      document.getElementById('futureDate').style.borderColor = 'rgba(255,80,80,0.6)';
+      setTimeout(() => { document.getElementById('futureDate').style.borderColor = ''; }, 1600);
+      return;
+    }
+
+    const newId = Date.now();
+    matchHistory.push({
+      id: newId,
+      date: dateVal,
+      time: timeVal,
+      venue: venueVal || 'Venue TBA',
+      notes: notesVal,
+      status: 'upcoming'
+    });
+    saveHistory();
+
+    // Reset fields
+    document.getElementById('futureDate').value = '';
+    document.getElementById('futureTime').value = '16:30';
+    document.getElementById('futureVenue').value = '';
+    document.getElementById('futureNotes').value = '';
+
+    // Close panel, flash feedback, open history
+    document.getElementById('futureToggleWrap').classList.remove('open');
+    setTimeout(() => openMatchHistory(), 200);
+  }
+  window.saveFutureMatch = saveFutureMatch;
+
+
+
   (function buildTicker() {
     const matchDate = new Date('2026-05-08T16:30:00+06:00');
     const now       = new Date();
     const diffMs    = matchDate - now;
-    const diffDays  = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
 
-    let timeMsg;
-    if (diffMs <= 0)       timeMsg = '✅ Match completed — thanks everyone!';
-    else if (diffDays === 0) timeMsg = 'TODAY is the big day!';
-    else if (diffDays === 1) timeMsg = 'TOMORROW — get your boots ready!';
-    else                     timeMsg = `Only <span class="hi">${diffDays} days</span> to go!`;
+    let timeMsg = '✅ Match completed — thanks everyone!';
 
     const items = [
-      `<span class="hi">Psychology Dept</span> Internal Football Match — Battle Within!`,
+      `<span class="hi">Psychology Dept</span> Internal Football Match — Battle Within! ✅ Completed`,
       `${timeMsg}`,
-      `Kick-off at <span class="hi">4:30 PM</span> · Arena Seven, Dhaka`,
-      `Boys &amp; Girls both welcome <span class="hi">🎉</span> — bring your energy!`,
+      `Match played at <span class="hi">4:30 PM</span> · Arena Seven, Dhaka · <span class="hi">8 May 2026</span>`,
+      `Boys &amp; Girls both showed up — what a <span class="hi">turnout! 🎉</span>`,
       `Organized by <span class="hi">Sadik · Yeamin · Rahat · Nahian · Niloy</span>`,
-      `Central Field <span class="hi">📍</span> — be there or miss out forever`,
-      `<span class="hi">⚽ Psychology Department</span> Football Match · May 8, 2026`,
-      `Tap the <span class="hi">📅 Date</span> card to add to your calendar`,
-      `Tap the <span class="hi">⏱ Timer</span> card to see the countdown`,
+      `<span class="hi">🏆</span> Thank you to everyone who played and cheered!`,
+      `<span class="hi">⚽ Psychology Department</span> Football Match · 8 May 2026 · Full Time`,
+      `Tap <span class="hi">📋 Match History</span> to see all results &amp; upcoming fixtures`,
+      `Stay tuned — <span class="hi">Next Match</span> details coming soon! ⚡`,
     ];
 
     // Build HTML — doubled for seamless infinite scroll
@@ -2618,7 +2978,7 @@ html, body {
       </div>
       <div class="team-divider"></div>
       <div class="team-player-list" id="teamPlayerList"></div>
-      <div class="team-card-footer">⚽ Psychology Dept · 8 May 2026</div>
+      <div class="team-card-footer">✅ Psychology Dept · 8 May 2026 · Completed</div>
     </div>
   </div>
 </div>
@@ -2635,7 +2995,7 @@ html, body {
     <div class="cal-grid" id="calGrid"></div>
     <div class="cal-legend">
       <div class="cal-legend-dot"></div>
-      <span>Match Day — 8 May 2026, 4:30 PM</span>
+      <span>Match Played — 8 May 2026, 4:30 PM ✅</span>
     </div>
   </div>
 </div>
@@ -2644,9 +3004,9 @@ html, body {
 <div class="modal-overlay" id="timerOverlay" onclick="closeOnBg(event,'timerOverlay')">
   <div class="timer-card">
     <button class="modal-close" onclick="closeModal('timerOverlay')">✕</button>
-    <div class="timer-title">⏱ &nbsp; Kick-off Countdown</div>
-    <div class="timer-done" id="timerDone">⚽ Match Day!</div>
-    <div class="timer-units" id="timerUnits">
+    <div class="timer-title">🏆 &nbsp; Match Completed</div>
+    <div class="timer-done" id="timerDone" style="display:block;">⚽ Full Time! Thanks everyone!</div>
+    <div class="timer-units" id="timerUnits" style="display:none;">
       <div class="timer-unit">
         <div class="timer-num" id="tDays">00</div>
         <div class="timer-lbl">Days</div>
@@ -2667,7 +3027,28 @@ html, body {
         <div class="timer-lbl">Secs</div>
       </div>
     </div>
-    <div class="timer-footer">Until kick-off at <span>Arena Seven · 4:30 PM</span></div>
+    <div class="timer-footer">Played at <span>Arena Seven · 4:30 PM · 8 May 2026</span></div>
+  </div>
+</div>
+<!-- ── MATCH HISTORY MODAL ── -->
+<div class="members-overlay" id="historyOverlay" onclick="closeHistoryOnBg(event)">
+  <div class="members-modal">
+    <div class="members-modal-bar"></div>
+    <button class="members-close-btn" onclick="closeHistory()">✕</button>
+    <div class="members-modal-inner">
+      <div class="members-modal-header">
+        <div class="members-modal-icon">📋</div>
+        <div>
+          <div class="members-modal-label">Psychology Dept.</div>
+          <div class="members-modal-title">Match History</div>
+        </div>
+      </div>
+      <div class="members-divider"></div>
+      <div class="members-list" id="historyList" style="gap:10px;">
+        <!-- injected by JS -->
+      </div>
+      <div class="members-footer-note" id="historyFooter"></div>
+    </div>
   </div>
 </div>
 </body>
