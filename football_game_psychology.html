@@ -3,7 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Football Match – Psych Dept</title>
+<title>Football Match – Psych Dept · 10 July 2026</title>
+
+<!-- ── Open Graph (Facebook, Messenger, WhatsApp, Discord) ── -->
+<meta property="og:type"        content="website">
+<meta property="og:title"       content="⚡ Battle Within — Psych Dept Football Match">
+<meta property="og:description" content="Psychology Department Internal Football Match · Friday 10 July 2026 · Kick-off 6:00 PM · UHFC Sports Complex">
+<meta property="og:image"       content="https://khalarnani.github.io/psych-football-preview.png">
+<meta property="og:image:width"  content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url"         content="https://khalarnani.github.io/">
+<meta property="og:site_name"   content="UHFC Psychology Department">
+
+<!-- ── Twitter / X Card ── -->
+<meta name="twitter:card"        content="summary_large_image">
+<meta name="twitter:title"       content="⚡ Battle Within — Psych Dept Football Match">
+<meta name="twitter:description" content="Friday 10 July 2026 · Kick-off 6:00 PM · UHFC Sports Complex">
+<meta name="twitter:image"       content="https://khalarnani.github.io/psych-football-preview.png">
+
+<!-- ── General SEO / WhatsApp fallback ── -->
+<meta name="description" content="Psychology Department Internal Football Match · Friday 10 July 2026 · Kick-off 6:00 PM · UHFC Sports Complex. Boys & girls both welcome.">"
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
@@ -2932,15 +2951,49 @@ html, body {
   function pad(n) { return String(n).padStart(2,'0'); }
 
   function updateTimer() {
-    const target = new Date('2026-07-10T18:00:00+06:00'); // Kick-off: 10 July 2026, 6:00 PM
-    const now    = new Date();
-    const diff   = target - now;
+    const kickoff  = new Date('2026-07-10T18:00:00+06:00');
+    const matchEnd = new Date('2026-07-10T20:30:00+06:00'); // ~2.5 hrs after kick-off
+    const now      = new Date();
+    const diff     = kickoff - now;
 
-    if (diff <= 0) {
-      document.getElementById('timerDone').style.display  = 'block';
-      document.getElementById('timerUnits').style.display = 'none';
+    const doneEl  = document.getElementById('timerDone');
+    const unitsEl = document.getElementById('timerUnits');
+    const titleEl = document.querySelector('.timer-title');
+    const footEl  = document.querySelector('.timer-footer');
+
+    // ── STATE 3: After match ──
+    if (now >= matchEnd) {
+      unitsEl.style.display = 'none';
+      doneEl.style.display  = 'block';
+      doneEl.innerHTML = `
+        <div style="font-size:36px;margin-bottom:8px;">🏆</div>
+        <div style="font-family:'Oswald',sans-serif;font-size:20px;font-weight:700;color:#aeea00;letter-spacing:1px;">That's Full Time!</div>
+        <div style="font-family:'Oswald',sans-serif;font-size:13px;color:rgba(232,245,233,0.7);margin-top:8px;line-height:1.6;">Thanks for coming out.<br>Psychology Department · 10 July 2026</div>
+      `;
+      if (titleEl) titleEl.textContent = 'Match Concluded';
+      if (footEl)  footEl.style.display = 'none';
+      if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
       return;
     }
+
+    // ── STATE 2: Match day (kick-off within 0–2.5 hrs) ──
+    if (diff <= 0) {
+      unitsEl.style.display = 'none';
+      doneEl.style.display  = 'block';
+      doneEl.innerHTML = `
+        <div style="font-size:36px;margin-bottom:8px;animation:pulse 1s infinite;">⚽</div>
+        <div style="font-family:'Oswald',sans-serif;font-size:22px;font-weight:700;color:#00e676;letter-spacing:1px;">KICK-OFF!</div>
+        <div style="font-family:'Oswald',sans-serif;font-size:13px;color:rgba(232,245,233,0.7);margin-top:8px;line-height:1.6;">Get to UHFC Sports Complex now.<br>It's match day. Let's go! ⚡</div>
+      `;
+      if (titleEl) titleEl.textContent = '⚡ Match Day is Here!';
+      if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+      return;
+    }
+
+    // ── STATE 1: Pre-match countdown ──
+    doneEl.style.display  = 'none';
+    unitsEl.style.display = 'flex';
+    if (titleEl) titleEl.innerHTML = '&#9889; &nbsp; Countdown to Kick-off';
 
     const days  = Math.floor(diff / (1000*60*60*24));
     const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
@@ -3166,21 +3219,28 @@ html, body {
 
   /* ── Mini countdown shown on the Kick-off card's back face ── */
   let miniCountdownInterval = null;
-  const MINI_TARGET = new Date('2026-07-10T18:00:00+06:00');
 
   function updateMiniCountdown() {
     const el = document.getElementById('miniCountdown');
     if (!el) return;
-    const diff = MINI_TARGET - new Date();
-    if (diff <= 0) {
-      el.textContent = "Kick-off! ⚡";
-      return;
+    const kickoff  = new Date('2026-07-10T18:00:00+06:00');
+    const matchEnd = new Date('2026-07-10T20:30:00+06:00');
+    const now  = new Date();
+    const diff = kickoff - now;
+
+    if (now >= matchEnd) {
+      el.textContent = "Full Time. Thanks! 🏆";
+      if (miniCountdownInterval) { clearInterval(miniCountdownInterval); miniCountdownInterval = null; }
+    } else if (diff <= 0) {
+      el.textContent = "KICK-OFF! Get there! ⚽";
+      if (miniCountdownInterval) { clearInterval(miniCountdownInterval); miniCountdownInterval = null; }
+    } else {
+      const days  = Math.floor(diff / (1000*60*60*24));
+      const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+      const mins  = Math.floor((diff % (1000*60*60)) / (1000*60));
+      const secs  = Math.floor((diff % (1000*60)) / 1000);
+      el.textContent = `${days}d ${String(hours).padStart(2,'0')}h ${String(mins).padStart(2,'0')}m ${String(secs).padStart(2,'0')}s`;
     }
-    const days  = Math.floor(diff / (1000*60*60*24));
-    const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
-    const mins  = Math.floor((diff % (1000*60*60)) / (1000*60));
-    const secs  = Math.floor((diff % (1000*60)) / 1000);
-    el.textContent = `${days}d ${String(hours).padStart(2,'0')}h ${String(mins).padStart(2,'0')}m ${String(secs).padStart(2,'0')}s`;
   }
 
   function toggleKickoffFlip(el) {
