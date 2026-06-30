@@ -793,7 +793,8 @@ html, body {
   cursor: default;
   transition: background 0.15s;
 }
-.cal-day.active-month { color: #c8f5d5; }
+.cal-day.active-month { color: #c8f5d5; cursor: pointer; }
+.cal-day.active-month:active { transform: scale(0.92); }
 .cal-day.today {
   background: rgba(0,230,118,0.1);
   color: #00e676;
@@ -1020,6 +1021,46 @@ html, body {
   white-space: nowrap;
 }
 .vb-btn:active { background: #aeea00; transform: scale(0.96); }
+
+/* ── DOWNLOAD MATCH INFO BUTTON ── */
+.download-info-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin: 22px 0 8px;
+}
+.download-info-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00e676 0%, #00b85c 100%);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(0,230,118,0.35), inset 0 1px 0 rgba(255,255,255,0.25);
+  transition: transform 0.15s, box-shadow 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.download-info-btn:active {
+  transform: scale(0.92);
+  box-shadow: 0 2px 8px rgba(0,230,118,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+.dib-icon {
+  font-size: 22px;
+  line-height: 1;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.25));
+}
+.dib-label {
+  font-family: 'Oswald', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: rgba(0,230,118,0.6);
+  text-transform: uppercase;
+}
 /* ── SILHOUETTE NAME POP-UP ── */
 .sil svg { overflow: visible; }
 @keyframes popIn {
@@ -1980,6 +2021,7 @@ html, body {
 }
 
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
@@ -2334,6 +2376,14 @@ html, body {
         <div class="ft">UHFC Sports Complex</div>
       </div>
 
+      <!-- ── DOWNLOAD MATCH INFO ── -->
+      <div class="download-info-wrap">
+        <button class="download-info-btn" onclick="downloadMatchInfo()">
+          <span class="dib-icon">📥</span>
+        </button>
+        <span class="dib-label">Info</span>
+      </div>
+
     </div>
   </div>
 </div>
@@ -2446,7 +2496,7 @@ html, body {
       let cls = 'cal-day active-month';
       if (isMatch)  cls += ' match-day';
       if (isTodayD && !isMatch) cls += ' today';
-      html += '<div class="'+cls+'">' + d + '</div>';
+      html += '<div class="'+cls+'" onclick="addDayToCalendar('+calViewYear+','+calViewMonth+','+d+')">' + d + '</div>';
     }
 
     // next month filler
@@ -2457,6 +2507,319 @@ html, body {
     }
 
     grid.innerHTML = html;
+  }
+
+  function downloadMatchInfo() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+    const pageW = doc.internal.pageSize.getWidth();
+    const pageH = doc.internal.pageSize.getHeight();
+    const margin = 48;
+    let y = 0;
+
+    // ── Palette ──
+    const green     = [0, 200, 100];
+    const greenDk   = [0, 130, 66];
+    const dark      = [6, 22, 8];
+    const darkAlt   = [10, 34, 12];
+    const lime      = [174, 234, 0];
+    const textDark  = [24, 28, 24];
+    const grey      = [120, 130, 120];
+    const cream     = [247, 250, 246];
+
+    // ══════════════════════════════
+    // CORNER BRACKETS (matches poster motif)
+    // ══════════════════════════════
+    function corners(pageMargin) {
+      doc.setDrawColor(...green);
+      doc.setLineWidth(1.4);
+      const len = 14, m = pageMargin;
+      // top-left
+      doc.line(m, m, m + len, m); doc.line(m, m, m, m + len);
+      // top-right
+      doc.line(pageW - m, m, pageW - m - len, m); doc.line(pageW - m, m, pageW - m, m + len);
+      // bottom-left
+      doc.line(m, pageH - m, m + len, pageH - m); doc.line(m, pageH - m, m, pageH - m - len);
+      // bottom-right
+      doc.line(pageW - m, pageH - m, pageW - m - len, pageH - m); doc.line(pageW - m, pageH - m, pageW - m, pageH - m - len);
+    }
+    corners(20);
+
+    // ══════════════════════════════
+    // HEADER — pitch-stripe band + ball motif
+    // ══════════════════════════════
+    const headerH = 168;
+    doc.setFillColor(...dark);
+    doc.rect(0, 0, pageW, headerH, 'F');
+
+    // subtle pitch stripes
+    doc.setFillColor(...darkAlt);
+    for (let sx = 0; sx < pageW; sx += 44) {
+      doc.rect(sx, 0, 22, headerH, 'F');
+    }
+    // re-cover with dark gradient feel using a soft overlay rect (kept solid since jsPDF has no real gradient fill without plugin)
+    doc.setFillColor(...dark);
+    doc.setDrawColor(...dark);
+
+    // concentric "ball" rings, top-right
+    doc.setDrawColor(0, 200, 100);
+    [70, 50, 30].forEach((r, i) => {
+      doc.setLineWidth(1.1);
+      doc.setDrawColor(0, 200, 100);
+      doc.circle(pageW - 70, 64, r, 'S');
+    });
+    doc.setFillColor(...green);
+    doc.circle(pageW - 70, 64, 13, 'F');
+    doc.setFillColor(...dark);
+    // simple pentagon-ish pattern dots on the ball to suggest a football
+    doc.setFillColor(...dark);
+    doc.circle(pageW - 70, 64, 4, 'F');
+
+    // green accent corner wedge top-left
+    doc.setFillColor(...green);
+    doc.triangle(0, 0, 26, 0, 0, 26, 'F');
+
+    doc.setTextColor(...green);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.text('P S Y C H O L O G Y   D E P A R T M E N T', margin, 38);
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(28);
+    doc.text('Internal Football Match', margin, 68);
+
+    // tagline badge (clipped-corner chip, like the poster's date chip)
+    const tag = 'BATTLE WITHIN';
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    const tagW = doc.getTextWidth(tag) + 26;
+    doc.setFillColor(...green);
+    doc.roundedRect(margin, 82, tagW, 24, 3, 3, 'F');
+    doc.setTextColor(...dark);
+    doc.text(tag, margin + 13, 98);
+
+    doc.setTextColor(...lime);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10.5);
+    doc.text('Friday, 10 July 2026   |   Kick-off 6:00 PM   |   UHFC Sports Complex', margin, 128);
+
+    // bottom accent bar with two-tone split
+    doc.setFillColor(...green);
+    doc.rect(0, headerH, pageW * 0.65, 5, 'F');
+    doc.setFillColor(...lime);
+    doc.rect(pageW * 0.65, headerH, pageW * 0.35, 5, 'F');
+
+    y = headerH + 42;
+
+    // ══════════════════════════════
+    // Section title helper
+    // ══════════════════════════════
+    function sectionTitle(label, num) {
+      doc.setFillColor(...dark);
+      doc.circle(margin + 9, y - 4, 9, 'F');
+      doc.setTextColor(255,255,255);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9);
+      doc.text(String(num), margin + 9 - doc.getTextWidth(String(num))/2, y);
+      doc.setTextColor(...textDark);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(14);
+      doc.text(label.toUpperCase(), margin + 26, y);
+      doc.setDrawColor(220, 226, 220);
+      doc.setLineWidth(0.8);
+      doc.line(margin + 26, y + 7, pageW - margin, y + 7);
+      y += 30;
+    }
+
+    function checkPageBreak(needed) {
+      if (y + needed > pageH - 60) {
+        doc.addPage();
+        corners(20);
+        y = 64;
+      }
+    }
+
+    // ══════════════════════════════
+    // SECTION 1 — Match Details (icon chips, 2x2 grid)
+    // ══════════════════════════════
+    sectionTitle('Match Details', '01');
+
+    const details = [
+      ['DATE', 'Friday, 10 July 2026'],
+      ['KICK-OFF', '6:00 PM'],
+      ['VENUE', 'UHFC Sports Complex'],
+      ['FORMAT', 'Boys & Girls welcome'],
+    ];
+    const cardGap = 14;
+    const cardW = (pageW - margin * 2 - cardGap) / 2;
+    const cardH = 56;
+    const mapsUrl = 'https://maps.app.goo.gl/M5Fv6oKr1Eezhn1Z7';
+    details.forEach(([k, v], i) => {
+      const col = i % 2, row = Math.floor(i / 2);
+      const cx = margin + col * (cardW + cardGap);
+      const cy = y + row * (cardH + cardGap);
+      const isVenue = k === 'VENUE';
+      doc.setFillColor(...cream);
+      doc.roundedRect(cx, cy, cardW, cardH, 5, 5, 'F');
+      doc.setFillColor(...green);
+      doc.rect(cx, cy, 4, cardH, 'F');
+      doc.setTextColor(...grey);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8.5);
+      doc.text(k, cx + 16, cy + 20);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(12.5);
+      if (isVenue) {
+        doc.setTextColor(...greenDk);
+        doc.textWithLink(v, cx + 16, cy + 38, { url: mapsUrl });
+        doc.setDrawColor(...greenDk);
+        doc.setLineWidth(0.7);
+        const linkW = doc.getTextWidth(v);
+        doc.line(cx + 16, cy + 40, cx + 16 + linkW, cy + 40);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7.5);
+        doc.setTextColor(...grey);
+        doc.text('TAP TO OPEN IN MAPS', cx + 16, cy + 50);
+      } else {
+        doc.setTextColor(...textDark);
+        doc.text(v, cx + 16, cy + 38);
+      }
+    });
+    y += 2 * (cardH + cardGap) - cardGap + 36;
+
+    // ══════════════════════════════
+    // SECTION 2 — Organizers (jersey-number cards)
+    // ══════════════════════════════
+    checkPageBreak(140);
+    sectionTitle('Organizers', '02');
+
+    const roleColors = {
+      'Main Organizer': green,
+      'Chief Organizer': lime,
+      'Field Organizer': [0, 170, 220],
+      'Player Handler': [255, 153, 0],
+    };
+
+    const orgList = Object.values(organizers);
+    orgList.forEach((o, i) => {
+      checkPageBreak(50);
+      const rowY = y;
+      doc.setFillColor(...cream);
+      doc.roundedRect(margin, rowY - 16, pageW - margin * 2, 40, 5, 5, 'F');
+
+      // jersey-number badge
+      doc.setFillColor(...dark);
+      doc.circle(margin + 24, rowY + 4, 15, 'F');
+      doc.setTextColor(...green);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      const numStr = String(i + 1).padStart(2, '0');
+      doc.text(numStr, margin + 24 - doc.getTextWidth(numStr)/2, rowY + 8);
+
+      // name + role
+      doc.setTextColor(...textDark);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11.5);
+      doc.text(o.name, margin + 52, rowY);
+
+      const rc = roleColors[o.role] || grey;
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(7.5);
+      const roleW = doc.getTextWidth(o.role.toUpperCase()) + 12;
+      doc.setFillColor(...rc);
+      doc.roundedRect(margin + 52, rowY + 6, roleW, 13, 3, 3, 'F');
+      doc.setTextColor(255,255,255);
+      doc.text(o.role.toUpperCase(), margin + 58, rowY + 15.5);
+
+      // contact, right aligned
+      doc.setTextColor(...textDark);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10.5);
+      doc.text(o.contact, pageW - margin - 14 - doc.getTextWidth(o.contact), rowY + 4);
+
+      y += 50;
+    });
+
+    y += 20;
+    checkPageBreak(70);
+
+    // ══════════════════════════════
+    // Closing strip
+    // ══════════════════════════════
+    doc.setFillColor(...dark);
+    doc.roundedRect(margin, y, pageW - margin * 2, 46, 6, 6, 'F');
+    doc.setFillColor(...green);
+    doc.rect(margin, y, 4, 46, 'F');
+    doc.setTextColor(255,255,255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.text('See you on the pitch.', margin + 18, y + 20);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(...lime);
+    doc.setFontSize(9);
+    doc.text('Boys & girls both welcome — come for the turnout.', margin + 18, y + 35);
+
+    const dirLabel = 'Get Directions ->';
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9.5);
+    const dirW = doc.getTextWidth(dirLabel);
+    doc.setTextColor(...green);
+    doc.textWithLink(dirLabel, pageW - margin - 18 - dirW, y + 27, { url: mapsUrl });
+
+    // ══════════════════════════════
+    // Footer on every page
+    // ══════════════════════════════
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setDrawColor(220, 226, 220);
+      doc.setLineWidth(0.6);
+      doc.line(margin, pageH - 40, pageW - margin, pageH - 40);
+      doc.setFontSize(8);
+      doc.setTextColor(...grey);
+      doc.setFont('helvetica', 'normal');
+      doc.text('UHFC PSYCHOLOGY DEPARTMENT FOOTBALL MATCH', margin, pageH - 26);
+      doc.text(`PAGE ${i} OF ${pageCount}`, pageW - margin - doc.getTextWidth(`PAGE ${i} OF ${pageCount}`), pageH - 26);
+    }
+
+    doc.save('UHFC-Match-Day-Info.pdf');
+  }
+
+  function addDayToCalendar(year, month, day) {
+    // month is 0-indexed JS month
+    const pad2 = n => String(n).padStart(2, '0');
+    const dateStr = year + pad2(month+1) + pad2(day);
+    const isMatch = (year === 2026 && month === 6 && day === 10);
+    const title = isMatch ? 'Match Day ⚡ UHFC' : 'Match Day';
+    const desc  = isMatch
+      ? 'Kick-off 6:00 PM at UHFC Sports Complex.'
+      : 'Marked as a match day.';
+
+    const ics = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//UHFC//MatchDay//EN',
+      'BEGIN:VEVENT',
+      'UID:' + Date.now() + '@uhfc',
+      'DTSTAMP:' + dateStr + 'T000000Z',
+      'DTSTART;VALUE=DATE:' + dateStr,
+      'DTEND;VALUE=DATE:' + dateStr,
+      'SUMMARY:' + title,
+      'DESCRIPTION:' + desc,
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ].join('\r\n');
+
+    const blob = new Blob([ics], { type: 'text/calendar' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url;
+    a.download = 'match-day-' + dateStr + '.ics';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
   }
 
   function calNav(dir) {
