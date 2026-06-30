@@ -2783,7 +2783,31 @@ html, body {
       doc.text(`PAGE ${i} OF ${pageCount}`, pageW - margin - doc.getTextWidth(`PAGE ${i} OF ${pageCount}`), pageH - 26);
     }
 
-    doc.save('UHFC-Match-Day-Info.pdf');
+    const fileName = 'UHFC-Match-Day-Info.pdf';
+    const ua = navigator.userAgent || '';
+    const isInAppBrowser = /FBAN|FBAV|Instagram|Line\/|MicroMessenger|Twitter|TikTok/i.test(ua);
+
+    if (isInAppBrowser) {
+      // In-app browsers (Messenger, Instagram, etc.) block real file downloads.
+      // Open the PDF in a new tab instead so the user can view/share/save it from there.
+      try {
+        const blobUrl = doc.output('bloburl');
+        const win = window.open(blobUrl, '_blank');
+        if (!win) {
+          // Popup blocked — fall back to a data URI navigation in the same tab.
+          window.location.href = doc.output('datauristring');
+        }
+      } catch (err) {
+        alert('This app\'s built-in browser can\'t open the PDF directly.\n\nTap the menu (••• or ⋮) and choose "Open in Browser" (Chrome/Safari), then tap the Info button again.');
+      }
+    } else {
+      try {
+        doc.save(fileName);
+      } catch (err) {
+        const blobUrl = doc.output('bloburl');
+        window.open(blobUrl, '_blank');
+      }
+    }
   }
 
   function addDayToCalendar(year, month, day) {
