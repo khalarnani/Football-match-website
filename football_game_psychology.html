@@ -744,6 +744,83 @@ html, body {
   animation: cardIn 0.28s cubic-bezier(0.34,1.56,0.64,1);
   position: relative;
 }
+
+/* ── BROWSER PROMPT MODAL ── */
+.bp-card {
+  background: linear-gradient(145deg, #071a08, #0a2e0c);
+  border: 1px solid rgba(0,230,118,0.35);
+  border-radius: 18px;
+  padding: 26px 22px 22px;
+  width: min(360px, 92vw);
+  box-shadow: 0 0 50px rgba(0,230,118,0.2), 0 0 100px rgba(0,0,0,0.7);
+  animation: cardIn 0.28s cubic-bezier(0.34,1.56,0.64,1);
+  position: relative;
+  text-align: center;
+}
+.bp-icon {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00e676 0%, #00b85c 100%);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 14px;
+  font-size: 24px;
+  box-shadow: 0 0 24px rgba(0,230,118,0.4);
+}
+.bp-title {
+  font-family: 'Oswald', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.4px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+.bp-body {
+  font-family: 'Oswald', sans-serif;
+  font-size: 13px;
+  color: rgba(232,245,233,0.78);
+  line-height: 1.55;
+  margin-bottom: 18px;
+}
+.bp-body b { color: #aeea00; }
+.bp-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.bp-btn {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s;
+}
+.bp-btn:active { transform: scale(0.96); }
+.bp-btn-primary {
+  background: linear-gradient(135deg, #00e676 0%, #00b85c 100%);
+  color: #00150a;
+}
+.bp-btn-secondary {
+  background: transparent;
+  border: 1px solid rgba(0,230,118,0.35);
+  color: #aeea00;
+}
+.bp-copied {
+  font-size: 11px;
+  color: #00e676;
+  margin-top: 8px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.bp-copied.show { opacity: 1; }
 .cal-header {
   display: flex;
   align-items: center;
@@ -2510,6 +2587,14 @@ html, body {
   }
 
   function downloadMatchInfo() {
+    const ua = navigator.userAgent || '';
+    const isInAppBrowser = /FBAN|FBAV|Instagram|Line\/|MicroMessenger|TikTok|Twitter|GSA\/.*Version/i.test(ua) || (/iPhone|iPad/i.test(ua) && !/Safari/i.test(ua) && !/CriOS/i.test(ua) && !/FxiOS/i.test(ua));
+
+    if (isInAppBrowser) {
+      showBrowserPrompt();
+      return;
+    }
+
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ unit: 'pt', format: 'a4' });
     const pageW = doc.internal.pageSize.getWidth();
@@ -2784,29 +2869,11 @@ html, body {
     }
 
     const fileName = 'UHFC-Match-Day-Info.pdf';
-    const ua = navigator.userAgent || '';
-    const isInAppBrowser = /FBAN|FBAV|Instagram|Line\/|MicroMessenger|Twitter|TikTok/i.test(ua);
-
-    if (isInAppBrowser) {
-      // In-app browsers (Messenger, Instagram, etc.) block real file downloads.
-      // Open the PDF in a new tab instead so the user can view/share/save it from there.
-      try {
-        const blobUrl = doc.output('bloburl');
-        const win = window.open(blobUrl, '_blank');
-        if (!win) {
-          // Popup blocked — fall back to a data URI navigation in the same tab.
-          window.location.href = doc.output('datauristring');
-        }
-      } catch (err) {
-        alert('This app\'s built-in browser can\'t open the PDF directly.\n\nTap the menu (••• or ⋮) and choose "Open in Browser" (Chrome/Safari), then tap the Info button again.');
-      }
-    } else {
-      try {
-        doc.save(fileName);
-      } catch (err) {
-        const blobUrl = doc.output('bloburl');
-        window.open(blobUrl, '_blank');
-      }
+    try {
+      doc.save(fileName);
+    } catch (err) {
+      const blobUrl = doc.output('bloburl');
+      window.open(blobUrl, '_blank');
     }
   }
 
@@ -2907,6 +2974,39 @@ html, body {
 
   function closeOnBg(e, id) {
     if (e.target === document.getElementById(id)) closeModal(id);
+  }
+
+  function showBrowserPrompt() {
+    document.getElementById('bpOverlay').classList.add('active');
+    document.getElementById('bpCopied').classList.remove('show');
+  }
+
+  function copyPageLink() {
+    const url = window.location.href;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(() => {
+        const el = document.getElementById('bpCopied');
+        el.classList.add('show');
+        setTimeout(() => el.classList.remove('show'), 3000);
+      }).catch(() => fallbackCopy(url));
+    } else {
+      fallbackCopy(url);
+    }
+  }
+
+  function fallbackCopy(text) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;top:-999px;left:-999px;opacity:0;';
+    document.body.appendChild(ta);
+    ta.focus(); ta.select();
+    try {
+      document.execCommand('copy');
+      const el = document.getElementById('bpCopied');
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 3000);
+    } catch(e) {}
+    document.body.removeChild(ta);
   }
 
 
@@ -3451,6 +3551,30 @@ html, body {
 </div>
 
 <!-- ── CALENDAR MODAL ── -->
+<!-- ── BROWSER PROMPT MODAL ── -->
+<div class="modal-overlay" id="bpOverlay" onclick="closeOnBg(event,'bpOverlay')">
+  <div class="bp-card">
+    <button class="modal-close" onclick="closeModal('bpOverlay')">✕</button>
+    <div class="bp-icon">&#128640;</div>
+    <div class="bp-title">Open in Your Browser</div>
+    <div class="bp-body">
+      Instagram &amp; Messenger's built-in browser<br>
+      <b>can't download files.</b><br><br>
+      Copy the link below and open it in<br>
+      <b>Chrome</b> or <b>Safari</b> to download the PDF.
+    </div>
+    <div class="bp-actions">
+      <button class="bp-btn bp-btn-primary" onclick="copyPageLink()">
+        Copy Page Link
+      </button>
+      <button class="bp-btn bp-btn-secondary" onclick="closeModal('bpOverlay')">
+        Got it, close
+      </button>
+    </div>
+    <div class="bp-copied" id="bpCopied">Link copied! Paste it in Chrome or Safari</div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="calOverlay" onclick="closeOnBg(event,'calOverlay')">
   <div class="cal-card">
     <button class="modal-close" onclick="closeModal('calOverlay')">✕</button>
