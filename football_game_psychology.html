@@ -37,9 +37,25 @@
 
 html, body {
   width: 100%; min-height: 100vh;
-  background: #050a05;
+  background:
+    radial-gradient(ellipse 90% 55% at 50% -8%,   rgba(0,230,118,0.10) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 50% at -5% 100%,  rgba(0,230,118,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 50% at 105% 100%, rgba(174,234,0,0.05) 0%, transparent 60%),
+    linear-gradient(180deg, #060f07 0%, #050a05 40%, #040803 100%);
   font-family: 'Oswald', sans-serif;
   overflow-x: hidden;
+  position: relative;
+}
+/* Cinematic film-grain, sits above everything but ignores clicks */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* ══════════════════════════════
@@ -269,12 +285,24 @@ html, body {
 /* ── PITCH BG ── */
 .pitch-bg {
   position: absolute; inset: 0;
-  background: repeating-linear-gradient(
-    180deg,
-    #1e6823 0px, #1e6823 48px,
-    #165219 48px, #165219 96px
-  );
+  background:
+    radial-gradient(ellipse 85% 45% at 50% 0%, rgba(255,255,255,0.09) 0%, transparent 60%),
+    repeating-linear-gradient(180deg,
+      #1f6f24 0px, #1f6f24 48px,
+      #175a1b 48px, #175a1b 96px
+    ),
+    repeating-linear-gradient(115deg,
+      rgba(255,255,255,0.035) 0px, rgba(255,255,255,0.035) 2px,
+      transparent 2px, transparent 9px
+    );
   z-index: 0;
+}
+.pitch-bg::after {
+  content: '';
+  position: absolute; inset: 0;
+  opacity: 0.06;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
 }
 .pitch-markings { position: absolute; inset: 0; z-index:1; pointer-events:none; }
 .pitch-markings::before {
@@ -298,7 +326,9 @@ html, body {
 .pbox-b { bottom:0; border-bottom:none; }
 .overlay {
   position:absolute; inset:0;
-  background:linear-gradient(180deg, rgba(4,18,5,0.84) 0%, rgba(4,18,5,0.56) 30%, rgba(4,18,5,0.56) 70%, rgba(4,18,5,0.90) 100%);
+  background:
+    radial-gradient(ellipse 130% 90% at 50% 45%, transparent 45%, rgba(2,10,3,0.42) 100%),
+    linear-gradient(180deg, rgba(4,18,5,0.84) 0%, rgba(4,18,5,0.56) 30%, rgba(4,18,5,0.56) 70%, rgba(4,18,5,0.90) 100%);
   z-index:3;
 }
 
@@ -1881,6 +1911,7 @@ html, body {
   width: 100%;
   max-width: 680px;
   max-height: 88vh;
+  position: relative;
   background: linear-gradient(180deg, #0b2a0d 0%, #071a08 100%);
   border-radius: 24px 24px 0 0;
   border-top: 1px solid rgba(0,230,118,0.3);
@@ -1961,6 +1992,59 @@ html, body {
   flex-shrink: 0;
 }
 
+/* Stats summary */
+.members-stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  color: rgba(255,255,255,0.6);
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.members-stats .stats-total { color: #d4f5dd; font-weight: 600; }
+.members-stats .stats-sep { color: rgba(0,230,118,0.35); }
+.members-stats .stats-batches { color: rgba(0,230,118,0.7); }
+
+/* Batch quick-toggle chips */
+.members-batch-toggles {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  flex-shrink: 0;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.members-batch-toggles::-webkit-scrollbar { display: none; }
+.batch-toggle {
+  flex-shrink: 0;
+  font-family: 'Oswald', sans-serif;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.batch-toggle:active { transform: scale(0.94); }
+.batch-toggle .btc {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: rgba(0,0,0,0.28);
+}
+
 /* Search */
 .members-search-wrap {
   display: flex;
@@ -2033,11 +2117,19 @@ html, body {
 .member-avatar {
   width: 34px; height: 34px;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(0,230,118,0.15), rgba(174,234,0,0.1));
-  border: 1px solid rgba(0,230,118,0.25);
   display: flex; align-items: center; justify-content: center;
-  font-size: 16px;
+  font-family: 'Anton', sans-serif;
+  font-size: 14px;
+  letter-spacing: 0.5px;
   flex-shrink: 0;
+  position: relative;
+}
+.member-avatar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12);
 }
 .member-name {
   font-family: 'Oswald', sans-serif;
@@ -3140,6 +3232,7 @@ html, body {
     { name: "Md Sagor", batch: "2019-20", cr: false, organizer: false },
     { name: "Sanjida Islam", batch: "2019-20", cr: false, organizer: false },
     { name: "Istiak Akash", batch: "2020-21", cr: false, organizer: false },
+    { name: "Mohammad Labibul Hasan", batch: "2020-21", cr: false, organizer: false },
     { name: "Mahi Ehtesham", batch: "2021-22", cr: true,  organizer: false },
     { name: "Ahsun Niloy", batch: "2021-22", cr: true,  organizer: true  },
     { name: "Md. Hossain Iqbal Sadik", batch: "2021-22", cr: false, organizer: true  },
@@ -3148,6 +3241,11 @@ html, body {
     { name: "Antara Maeydha Sojony", batch: "2021-22", cr: false, organizer: false },
     { name: "Shah Jalal Himel", batch: "2021-22", cr: false, organizer: false },
     { name: "Md Rafad", batch: "2021-22", cr: false, organizer: false },
+    { name: "Fahim", batch: "2021-22", cr: false, organizer: false },
+    { name: "Meherunnesa Mumu", batch: "2021-22", cr: false, organizer: false },
+    { name: "Md. Abdul Kaiyum", batch: "2021-22", cr: false, organizer: false },
+    { name: "Leticia Sarker Apshora", batch: "2021-22", cr: false, organizer: false },
+    { name: "Farzana Sultana Trisha", batch: "2021-22", cr: false, organizer: false },
     { name: "Yeamin", batch: "2022-23", cr: false, organizer: false },
     { name: "Nujhat Mehjabeen", batch: "2022-23", cr: false, organizer: false },
     { name: "Nusrat Kimte", batch: "2022-23", cr: false, organizer: false },
@@ -3155,7 +3253,7 @@ html, body {
     { name: "Amrin Uddin Erin", batch: "2023-24", cr: true,  organizer: false },
     { name: "Moumita Tasneen Mithila", batch: "2023-24", cr: false, organizer: false },
     { name: "Amir Sarker", batch: "2023-24", cr: false, organizer: true  },
-    { name: "Oritro", batch: "2024-25", cr: false, organizer: false },
+    { name: "Oritro Mahalanobish Nobho", batch: "2024-25", cr: false, organizer: false },
     { name: "Rayhan Hossen", batch: "2024-25", cr: false, organizer: false },
   ];
 
@@ -3167,6 +3265,53 @@ html, body {
     "2023-24": "#4fc3f7",
     "2024-25": "#f06292",
   };
+
+  let activeBatch = null;
+
+  function batchCounts() {
+    const counts = {};
+    members.forEach(m => { counts[m.batch] = (counts[m.batch] || 0) + 1; });
+    return counts;
+  }
+
+  function renderMemberStats() {
+    const counts = batchCounts();
+    const batches = Object.keys(counts).sort();
+
+    const statsEl = document.getElementById('membersStats');
+    statsEl.innerHTML = `<span class="stats-total">👥 ${members.length} Members</span><span class="stats-sep">·</span><span class="stats-batches">${batches.length} Batches</span>`;
+
+    const togglesEl = document.getElementById('membersBatchToggles');
+    const green = '#00e676';
+    const chips = [];
+    const allActive = activeBatch === null;
+    chips.push(`<button class="batch-toggle" style="${allActive ? `background:${green};color:#04120a;border:1px solid ${green};box-shadow:0 0 12px ${green}55;` : `background:${green}18;color:${green};border:1px solid ${green}55;`}" onclick="setBatchFilter(null)">All<span class="btc">${members.length}</span></button>`);
+    batches.forEach(b => {
+      const color = BATCH_COLORS[b] || green;
+      const isActive = activeBatch === b;
+      const style = isActive
+        ? `background:${color};color:#04120a;border:1px solid ${color};box-shadow:0 0 12px ${color}55;`
+        : `background:${color}18;color:${color};border:1px solid ${color}55;`;
+      chips.push(`<button class="batch-toggle" style="${style}" onclick="setBatchFilter('${b}')">${b}<span class="btc">${counts[b]}</span></button>`);
+    });
+    togglesEl.innerHTML = chips.join('');
+  }
+
+  function setBatchFilter(batch) {
+    activeBatch = batch;
+    document.getElementById('membersSearch').value = '';
+    applyMemberFilters();
+    renderMemberStats();
+  }
+  window.setBatchFilter = setBatchFilter;
+
+  function applyMemberFilters() {
+    const q = document.getElementById('membersSearch').value.toLowerCase();
+    let filtered = members;
+    if (activeBatch) filtered = filtered.filter(m => m.batch === activeBatch);
+    if (q) filtered = filtered.filter(m => m.name.toLowerCase().includes(q) || m.batch.includes(q));
+    renderMembers(filtered);
+  }
 
   function renderMembers(list) {
     const el = document.getElementById('membersList');
@@ -3185,7 +3330,7 @@ html, body {
       const badges = `${m.organizer ? '<span class="badge-pill badge-organizer">★ Organizer</span>' : ''}${m.cr ? '<span class="badge-pill badge-cr">CR</span>' : ''}`;
       return `<div class="member-row" style="animation-delay:${Math.min(i,20)*0.03}s; border-left:3px solid ${color};">
         <div class="member-num">${String(i+1).padStart(2,'0')}</div>
-        <div class="member-avatar">⭐</div>
+        <div class="member-avatar" style="background:linear-gradient(135deg, ${color}, ${color}cc); color:#04120a;">${(m.name || '?').trim().charAt(0).toUpperCase()}</div>
         <div class="member-info">
           <div class="member-name">${m.name}</div>
           <span class="member-batch-chip" style="color:${color}; background:${color}22; border:1px solid ${color}66;">Batch ${m.batch}</span>
@@ -3193,17 +3338,17 @@ html, body {
         <div class="member-badges">${badges}</div>
       </div>`;
     }).join('');
-    countEl.textContent = list.length + ' members';
+    countEl.textContent = list.length === members.length ? list.length + ' members' : `Showing ${list.length} of ${members.length}`;
   }
 
   function filterMembers() {
-    const q = document.getElementById('membersSearch').value.toLowerCase();
-    const filtered = members.filter(m => m.name.toLowerCase().includes(q) || m.batch.includes(q));
-    renderMembers(filtered);
+    applyMemberFilters();
   }
 
   function openMembers() {
     document.getElementById('membersSearch').value = '';
+    activeBatch = null;
+    renderMemberStats();
     renderMembers(members);
     document.getElementById('membersOverlay').classList.add('active');
   }
@@ -3284,7 +3429,7 @@ html, body {
         { name: 'Rafin', captain: false },
         { name: 'Fardin', captain: false },
         { name: 'Amir', captain: false },
-        { name: 'Oritro', captain: false },
+        { name: 'Oritro Mahalanobish Nobho', captain: false },
       ]
     }
   };
@@ -3574,6 +3719,8 @@ html, body {
         </div>
       </div>
       <div class="members-divider"></div>
+      <div class="members-stats" id="membersStats"></div>
+      <div class="members-batch-toggles" id="membersBatchToggles"></div>
       <div class="members-search-wrap">
         <span class="members-search-icon">🔍</span>
         <input class="members-search" id="membersSearch" name="psych-member-query" type="text" placeholder="Search members..." oninput="filterMembers()" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="search" data-form-type="other" data-lpignore="true"/>
