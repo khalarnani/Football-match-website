@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#071a08">
+<meta name="theme-color" content="#0b2a0d" media="(prefers-color-scheme: dark)">
 <title>Football Match – Psych Dept · 10 July 2026</title>
 
 <!-- ── Open Graph (Facebook, Messenger, WhatsApp, Discord) ── -->
@@ -222,17 +224,17 @@ body::after {
   100% { left: 140%; }
 }
 
-/* Arrow below button */
+/* Arrow below button, points up toward it */
 .splash-hint {
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   align-items: center;
   gap: 4px;
   animation: hintBob 1.5s ease-in-out infinite;
 }
 @keyframes hintBob {
   0%,100% { transform: translateY(0); opacity:0.5; }
-  50%      { transform: translateY(5px); opacity:1; }
+  50%      { transform: translateY(-5px); opacity:1; }
 }
 .splash-hint span {
   font-size: clamp(9px, 2.2vw, 11px);
@@ -1064,7 +1066,9 @@ body::after {
   padding: 0 !important;
   overflow: visible !important;
   position: relative;
+  transition: transform 0.15s ease;
 }
+.venue-flip-wrap:active { transform: scale(0.97); }
 .venue-flipper {
   position: relative;
   width: 100%;
@@ -1606,6 +1610,156 @@ body::after {
   margin-top: 6px;
   font-style: italic;
 }
+.history-entry.has-score {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s ease;
+}
+.history-entry.has-score:active { transform: scale(0.98); }
+.history-tap-hint {
+  font-size: clamp(9px,2.3vw,11px);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(0,230,118,0.55);
+  margin-top: 8px;
+  animation: hintPulse 1.6s ease-in-out infinite;
+}
+@keyframes hintPulse {
+  0%,100% { opacity: 0.5; }
+  50%     { opacity: 1; }
+}
+.history-score-reveal {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.45s ease, opacity 0.35s ease, margin-top 0.45s ease;
+}
+.history-score-reveal.open {
+  opacity: 1;
+  margin-top: 12px;
+}
+.history-scoreboard {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(160deg, rgba(0,0,0,0.55), rgba(0,40,20,0.4));
+  border: 1px solid rgba(255,215,0,0.25);
+  border-radius: 16px;
+  padding: 22px 14px 16px;
+  box-shadow: 0 0 24px rgba(255,215,0,0.08) inset;
+}
+.history-score-reveal.open .history-scoreboard {
+  animation: boardPop 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes boardPop {
+  0%   { transform: scale(0.85); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.history-ribbon {
+  position: absolute;
+  top: 12px; left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Oswald', sans-serif;
+  font-size: clamp(9px,2.3vw,11px);
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: #1a1200;
+  background: linear-gradient(90deg, #ffd700, #ffb300, #ffd700);
+  background-size: 200% 100%;
+  padding: 5px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  animation: ribbonShine 2.5s linear infinite;
+  z-index: 2;
+}
+@keyframes ribbonShine {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+.confetti-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+.confetti-piece {
+  position: absolute;
+  top: -10%;
+  width: 6px;
+  height: 10px;
+  opacity: 0.9;
+  animation-name: confettiFall;
+  animation-timing-function: ease-in;
+  animation-fill-mode: forwards;
+}
+@keyframes confettiFall {
+  0%   { top: -10%; opacity: 1; }
+  100% { top: 105%; opacity: 0; }
+}
+.history-vs-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+  z-index: 2;
+}
+.history-team {
+  flex: 1;
+  text-align: center;
+  padding: 10px 4px 8px;
+  border-radius: 12px;
+  transition: background 0.3s ease;
+  position: relative;
+}
+.history-team-name {
+  font-family: 'Oswald', sans-serif;
+  font-size: clamp(11px,2.8vw,13px);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+}
+.history-team-score {
+  font-family: 'Anton', sans-serif;
+  font-size: clamp(30px,9vw,42px);
+  color: rgba(255,255,255,0.8);
+  line-height: 1.1;
+}
+.history-team.won {
+  background: radial-gradient(circle at 50% 20%, rgba(255,215,0,0.16), rgba(255,215,0,0.04));
+  box-shadow: 0 0 0 1px rgba(255,215,0,0.4) inset;
+}
+.history-team.won .history-team-name { color: #ffd700; letter-spacing: 2px; }
+.history-team.won .history-team-score {
+  color: #ffd700;
+  text-shadow: 0 0 18px rgba(255,215,0,0.75), 0 0 4px rgba(255,215,0,0.9);
+}
+.history-team.lost { opacity: 0.55; }
+.history-team.lost .history-team-score { font-size: clamp(24px,7vw,32px); }
+.history-vs-badge {
+  font-family: 'Anton', sans-serif;
+  font-size: clamp(10px,2.6vw,12px);
+  letter-spacing: 1px;
+  color: rgba(0,0,0,0.6);
+  background: rgba(255,255,255,0.5);
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.history-margin {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  margin-top: 12px;
+  font-family: 'Oswald', sans-serif;
+  font-size: clamp(9px,2.3vw,11px);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,215,0,0.7);
+}
+
 .history-empty {
   text-align: center;
   padding: 30px 20px;
@@ -2037,6 +2191,13 @@ body::after {
   gap: 5px;
 }
 .batch-toggle:active { transform: scale(0.94); }
+@keyframes chipPop {
+  0%   { transform: scale(0.92); }
+  55%  { transform: scale(1.1); }
+  80%  { transform: scale(0.97); }
+  100% { transform: scale(1); }
+}
+.batch-toggle.chip-active-pop { animation: chipPop 0.4s cubic-bezier(0.34,1.56,0.64,1) both; }
 .batch-toggle .btc {
   font-size: 10px;
   font-weight: 700;
@@ -2055,8 +2216,19 @@ body::after {
   border-radius: 10px;
   padding: 10px 14px;
   flex-shrink: 0;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
 }
-.members-search-icon { font-size: 15px; opacity: 0.6; }
+.members-search-wrap:focus-within {
+  border-color: rgba(0,230,118,0.6);
+  background: rgba(0,230,118,0.05);
+  box-shadow: 0 0 0 3px rgba(0,230,118,0.1), 0 0 22px rgba(0,230,118,0.18), inset 0 0 12px rgba(0,230,118,0.06);
+}
+.members-search-icon { font-size: 15px; opacity: 0.6; transition: opacity 0.25s ease, transform 0.25s ease, filter 0.25s ease; }
+.members-search-wrap:focus-within .members-search-icon {
+  opacity: 1;
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 4px rgba(0,230,118,0.6));
+}
 .members-search {
   flex: 1;
   background: none;
@@ -2106,6 +2278,39 @@ body::after {
 @keyframes memberRowIn {
   0%   { opacity:0; transform: translateY(8px); }
   100% { opacity:1; transform: translateY(0); }
+}
+
+/* ── SKELETON LOADING ROWS ── */
+.skeleton-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(0,230,118,0.08);
+  border-radius: 10px;
+}
+.skeleton-avatar {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: linear-gradient(90deg, rgba(0,230,118,0.06) 25%, rgba(0,230,118,0.16) 50%, rgba(0,230,118,0.06) 75%);
+  background-size: 200% 100%;
+  animation: skeletonShine 1.4s ease-in-out infinite;
+}
+.skeleton-lines { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.skeleton-line {
+  height: 10px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, rgba(0,230,118,0.06) 25%, rgba(0,230,118,0.16) 50%, rgba(0,230,118,0.06) 75%);
+  background-size: 200% 100%;
+  animation: skeletonShine 1.4s ease-in-out infinite;
+}
+.skeleton-line.short { width: 40%; }
+.skeleton-line.long { width: 70%; }
+@keyframes skeletonShine {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 .member-num {
   font-family: 'Anton', sans-serif;
@@ -2162,7 +2367,12 @@ body::after {
   border-radius:20px;
   white-space:nowrap;
   text-transform:uppercase;
+  position: relative;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s ease;
 }
+.badge-pill:active { transform: scale(0.9); }
 .badge-cr {
   background: rgba(255,213,79,0.14);
   color: #ffd54f;
@@ -2172,6 +2382,56 @@ body::after {
   background: rgba(0,230,118,0.14);
   color: #00e676;
   border: 1px solid rgba(0,230,118,0.45);
+}
+.badge-tip {
+  position: absolute;
+  bottom: calc(100% + 9px);
+  right: 0;
+  min-width: 168px;
+  max-width: 210px;
+  background: linear-gradient(150deg, #0e2f11, #071a08);
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  line-height: 1.45;
+  text-transform: none;
+  white-space: normal;
+  text-align: left;
+  color: #e8f5e9;
+  opacity: 0;
+  transform: translateY(5px) scale(0.94);
+  transform-origin: bottom right;
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s cubic-bezier(0.34,1.4,0.64,1);
+  box-shadow: 0 10px 28px rgba(0,0,0,0.55);
+  z-index: 30;
+}
+.badge-tip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  right: 13px;
+  width: 0; height: 0;
+  border: 6px solid transparent;
+}
+.badge-tip.show { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+.badge-cr .badge-tip { border: 1px solid rgba(255,213,79,0.4); }
+.badge-cr .badge-tip::after { border-top-color: #0e2f11; }
+.badge-cr .badge-tip .badge-tip-label { color: #ffd54f; }
+.badge-organizer .badge-tip { border: 1px solid rgba(0,230,118,0.4); }
+.badge-organizer .badge-tip::after { border-top-color: #0e2f11; }
+.badge-organizer .badge-tip .badge-tip-label { color: #00e676; }
+.badge-tip-label {
+  display: block;
+  font-family: 'Oswald', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 2px;
 }
 
 /* Empty state */
@@ -2197,6 +2457,41 @@ body::after {
   letter-spacing: 1.5px;
   color: rgba(0,230,118,0.3);
   text-transform: uppercase;
+}
+.members-empty-search {
+  animation: memberRowIn 0.3s ease both;
+}
+.members-empty-search .members-empty-icon {
+  animation: emptySearchPulse 1.8s ease-in-out infinite;
+}
+@keyframes emptySearchPulse {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50%      { opacity: 0.65; transform: scale(1.08); }
+}
+.members-empty-search .members-empty-sub {
+  max-width: 240px;
+  overflow-wrap: break-word;
+}
+.members-empty-clear {
+  margin-top: 6px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #00e676;
+  background: rgba(0,230,118,0.1);
+  border: 1px solid rgba(0,230,118,0.4);
+  padding: 8px 18px;
+  border-radius: 20px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+.members-empty-clear:active {
+  transform: scale(0.95);
+  background: rgba(0,230,118,0.2);
+  box-shadow: 0 0 14px rgba(0,230,118,0.3);
 }
 
 .members-footer-note {
@@ -2241,7 +2536,7 @@ body::after {
 
     <div class="splash-hint">
       <span>Tap to reveal</span>
-      <div class="arrow">↓</div>
+      <div class="arrow">↑</div>
     </div>
   </div>
 </div>
@@ -3267,6 +3562,7 @@ body::after {
   };
 
   let activeBatch = null;
+  let justToggled = false;
 
   function batchCounts() {
     const counts = {};
@@ -3285,20 +3581,24 @@ body::after {
     const green = '#00e676';
     const chips = [];
     const allActive = activeBatch === null;
-    chips.push(`<button class="batch-toggle" style="${allActive ? `background:${green};color:#04120a;border:1px solid ${green};box-shadow:0 0 12px ${green}55;` : `background:${green}18;color:${green};border:1px solid ${green}55;`}" onclick="setBatchFilter(null)">All<span class="btc">${members.length}</span></button>`);
+    const allPop = justToggled && allActive ? ' chip-active-pop' : '';
+    chips.push(`<button class="batch-toggle${allPop}" style="${allActive ? `background:${green};color:#04120a;border:1px solid ${green};box-shadow:0 0 12px ${green}55;` : `background:${green}18;color:${green};border:1px solid ${green}55;`}" onclick="setBatchFilter(null)">All<span class="btc">${members.length}</span></button>`);
     batches.forEach(b => {
       const color = BATCH_COLORS[b] || green;
       const isActive = activeBatch === b;
+      const pop = justToggled && isActive ? ' chip-active-pop' : '';
       const style = isActive
         ? `background:${color};color:#04120a;border:1px solid ${color};box-shadow:0 0 12px ${color}55;`
         : `background:${color}18;color:${color};border:1px solid ${color}55;`;
-      chips.push(`<button class="batch-toggle" style="${style}" onclick="setBatchFilter('${b}')">${b}<span class="btc">${counts[b]}</span></button>`);
+      chips.push(`<button class="batch-toggle${pop}" style="${style}" onclick="setBatchFilter('${b}')">${b}<span class="btc">${counts[b]}</span></button>`);
     });
     togglesEl.innerHTML = chips.join('');
+    justToggled = false;
   }
 
   function setBatchFilter(batch) {
     activeBatch = batch;
+    justToggled = true;
     document.getElementById('membersSearch').value = '';
     applyMemberFilters();
     renderMemberStats();
@@ -3317,17 +3617,27 @@ body::after {
     const el = document.getElementById('membersList');
     const countEl = document.getElementById('memberCount');
     if (!list.length) {
-      el.innerHTML = `<div class="members-empty">
-        <div class="members-empty-icon">📋</div>
-        <div class="members-empty-text">Members list coming soon</div>
-        <div class="members-empty-sub">Names will be added here</div>
-      </div>`;
+      if (!members.length) {
+        el.innerHTML = `<div class="members-empty">
+          <div class="members-empty-icon">📋</div>
+          <div class="members-empty-text">Members list coming soon</div>
+          <div class="members-empty-sub">Names will be added here</div>
+        </div>`;
+      } else {
+        const q = document.getElementById('membersSearch').value;
+        el.innerHTML = `<div class="members-empty members-empty-search">
+          <div class="members-empty-icon">🔍</div>
+          <div class="members-empty-text">No matches found</div>
+          <div class="members-empty-sub">${q ? `Nothing matches "${q}"` : 'No members in this batch'}</div>
+          <button class="members-empty-clear" onclick="clearMemberFilters()">Clear Search</button>
+        </div>`;
+      }
       countEl.textContent = '';
       return;
     }
     el.innerHTML = list.map((m, i) => {
       const color = BATCH_COLORS[m.batch] || '#00e676';
-      const badges = `${m.organizer ? '<span class="badge-pill badge-organizer">★ Organizer</span>' : ''}${m.cr ? '<span class="badge-pill badge-cr">CR</span>' : ''}`;
+      const badges = `${m.organizer ? `<span class="badge-pill badge-organizer" onclick="toggleBadgeTip(this,event)">★ Organizer<span class="badge-tip"><span class="badge-tip-label">Organizer</span>Plans &amp; coordinates the match</span></span>` : ''}${m.cr ? `<span class="badge-pill badge-cr" onclick="toggleBadgeTip(this,event)">CR<span class="badge-tip"><span class="badge-tip-label">Class Representative</span>Point of contact for the batch</span></span>` : ''}`;
       return `<div class="member-row" style="animation-delay:${Math.min(i,20)*0.03}s; border-left:3px solid ${color};">
         <div class="member-num">${String(i+1).padStart(2,'0')}</div>
         <div class="member-avatar" style="background:linear-gradient(135deg, ${color}, ${color}cc); color:#04120a;">${(m.name || '?').trim().charAt(0).toUpperCase()}</div>
@@ -3341,19 +3651,64 @@ body::after {
     countEl.textContent = list.length === members.length ? list.length + ' members' : `Showing ${list.length} of ${members.length}`;
   }
 
+  function toggleBadgeTip(el, event) {
+    event.stopPropagation();
+    const tip = el.querySelector('.badge-tip');
+    const wasOpen = tip.classList.contains('show');
+    document.querySelectorAll('.badge-tip.show').forEach(t => t.classList.remove('show'));
+    if (!wasOpen) tip.classList.add('show');
+  }
+  window.toggleBadgeTip = toggleBadgeTip;
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.badge-pill')) {
+      document.querySelectorAll('.badge-tip.show').forEach(t => t.classList.remove('show'));
+    }
+  });
+
   function filterMembers() {
     applyMemberFilters();
+  }
+
+  function clearMemberFilters() {
+    document.getElementById('membersSearch').value = '';
+    activeBatch = null;
+    justToggled = true;
+    applyMemberFilters();
+    renderMemberStats();
+    document.getElementById('membersSearch').focus();
+  }
+  window.clearMemberFilters = clearMemberFilters;
+
+  function showMemberSkeleton() {
+    const el = document.getElementById('membersList');
+    el.innerHTML = Array.from({length: 8}).map(() => `
+      <div class="skeleton-row">
+        <div class="skeleton-avatar"></div>
+        <div class="skeleton-lines">
+          <div class="skeleton-line long"></div>
+          <div class="skeleton-line short"></div>
+        </div>
+      </div>
+    `).join('');
   }
 
   function openMembers() {
     document.getElementById('membersSearch').value = '';
     activeBatch = null;
-    renderMemberStats();
-    renderMembers(members);
     document.getElementById('membersOverlay').classList.add('active');
+    pushModalState('members');
+    showMemberSkeleton();
+    // Let the skeleton paint first, then do the heavier render work
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        renderMemberStats();
+        renderMembers(members);
+      }, 0);
+    });
   }
   function closeMembers() {
     document.getElementById('membersOverlay').classList.remove('active');
+    popModalStateIfOwned('members');
   }
   function closeMembersOnBg(e) {
     if (e.target === document.getElementById('membersOverlay')) closeMembers();
@@ -3529,7 +3884,12 @@ body::after {
       time: '16:30',
       venue: 'Arena Seven, Dhaka',
       notes: 'Internal department match. Both boys & girls participated. Great turnout!',
-      status: 'completed'
+      status: 'completed',
+      teamA: 'Rahat',
+      teamB: 'Nahian',
+      scoreA: 1,
+      scoreB: 5,
+      winner: 'Nahian'
     },
     {
       id: 2,
@@ -3578,14 +3938,36 @@ body::after {
       const isUpcoming = new Date(m.date + 'T' + (m.time || '00:00')) > now;
       const statusClass = isUpcoming ? 'upcoming' : 'completed';
       const badge = isUpcoming ? '⚡ Upcoming' : '✅ Completed';
-      return `<div class="history-entry ${statusClass}" style="animation-delay:${i*0.06}s;">
+      const hasScore = m.scoreA !== undefined && m.scoreB !== undefined;
+      return `<div class="history-entry ${statusClass} ${hasScore ? 'has-score' : ''}" style="animation-delay:${i*0.06}s;" ${hasScore ? `onclick="toggleMatchResult(${m.id})"` : ''}>
         <div class="history-entry-header">
           <span class="history-entry-badge">${badge}</span>
-          ${m.id > 1 ? `<button onclick="deleteHistoryEntry(${m.id})" style="background:none;border:none;color:rgba(255,100,100,0.4);font-size:13px;cursor:pointer;padding:2px 6px;border-radius:6px;-webkit-tap-highlight-color:transparent;" title="Remove">✕</button>` : ''}
+          ${m.id > 1 ? `<button onclick="event.stopPropagation(); deleteHistoryEntry(${m.id})" style="background:none;border:none;color:rgba(255,100,100,0.4);font-size:13px;cursor:pointer;padding:2px 6px;border-radius:6px;-webkit-tap-highlight-color:transparent;" title="Remove">✕</button>` : ''}
         </div>
         <div class="history-entry-date">${formatMatchDate(m.date, m.time)}</div>
         <div class="history-entry-venue">📍 ${m.venue || 'Venue TBA'}</div>
         ${m.notes ? `<div class="history-entry-notes">💬 ${m.notes}</div>` : ''}
+        ${hasScore ? `
+          <div class="history-tap-hint" id="hint-${m.id}">Tap to reveal result 👆</div>
+          <div class="history-score-reveal" id="score-${m.id}">
+            <div class="history-scoreboard">
+              <div class="history-ribbon">🏆 Champions</div>
+              <div class="confetti-layer" id="confetti-${m.id}"></div>
+              <div class="history-vs-row">
+                <div class="history-team ${m.winner === m.teamA ? 'won' : 'lost'}">
+                  <div class="history-team-name">${m.teamA}</div>
+                  <div class="history-team-score">${m.scoreA}</div>
+                </div>
+                <div class="history-vs-badge">VS</div>
+                <div class="history-team ${m.winner === m.teamB ? 'won' : 'lost'}">
+                  <div class="history-team-name">${m.teamB}</div>
+                  <div class="history-team-score">${m.scoreB}</div>
+                </div>
+              </div>
+              <div class="history-margin">Won by ${Math.abs(m.scoreA - m.scoreB)} goal${Math.abs(m.scoreA - m.scoreB) === 1 ? '' : 's'}</div>
+            </div>
+          </div>
+        ` : ''}
       </div>`;
     }).join('');
     const comp = sorted.filter(m => new Date(m.date) <= now).length;
@@ -3593,12 +3975,51 @@ body::after {
     footEl.textContent = `${comp} completed · ${upcoming} upcoming`;
   }
 
+  function spawnConfetti(id) {
+    const layer = document.getElementById('confetti-' + id);
+    if (!layer || layer.dataset.done) return;
+    layer.dataset.done = '1';
+    const colors = ['#ffd700', '#00e676', '#aeea00', '#fff', '#ffb300'];
+    for (let i = 0; i < 26; i++) {
+      const p = document.createElement('span');
+      p.className = 'confetti-piece';
+      p.style.left = Math.random() * 100 + '%';
+      p.style.background = colors[i % colors.length];
+      p.style.animationDelay = (Math.random() * 0.3) + 's';
+      p.style.animationDuration = (0.9 + Math.random() * 0.6) + 's';
+      p.style.transform = `rotate(${Math.random()*360}deg)`;
+      layer.appendChild(p);
+    }
+  }
+
+  function toggleMatchResult(id) {
+    const panel = document.getElementById('score-' + id);
+    const hint = document.getElementById('hint-' + id);
+    if (!panel) return;
+    const willOpen = !panel.classList.contains('open');
+    if (willOpen) {
+      panel.classList.add('open');
+      panel.style.maxHeight = panel.scrollHeight + 'px';
+      spawnConfetti(id);
+    } else {
+      panel.style.maxHeight = panel.scrollHeight + 'px'; // set explicit before collapsing so transition runs
+      requestAnimationFrame(() => {
+        panel.style.maxHeight = '0px';
+        panel.classList.remove('open');
+      });
+    }
+    if (hint) hint.style.display = willOpen ? 'none' : 'block';
+  }
+  window.toggleMatchResult = toggleMatchResult;
+
   function openMatchHistory() {
     renderHistory();
     document.getElementById('historyOverlay').classList.add('active');
+    pushModalState('history');
   }
   function closeHistory() {
     document.getElementById('historyOverlay').classList.remove('active');
+    popModalStateIfOwned('history');
   }
   function closeHistoryOnBg(e) {
     if (e.target === document.getElementById('historyOverlay')) closeHistory();
@@ -3685,6 +4106,90 @@ body::after {
 
     document.getElementById('tickerTrack').innerHTML = html;
   })();
+
+  /* ══════════════════════════════
+     ANDROID BACK-BUTTON SUPPORT
+     Pressing back closes an open modal
+     instead of leaving the page.
+  ══════════════════════════════ */
+  let modalStateOwner = null; // which modal tag pushed the current history entry
+
+  function pushModalState(tag) {
+    try {
+      history.pushState({ modalTag: tag }, '');
+      modalStateOwner = tag;
+    } catch(e) {}
+  }
+  // Called from a modal's own close function (X button, swipe, bg tap)
+  // so the extra history entry we pushed gets cleaned up too.
+  function popModalStateIfOwned(tag) {
+    if (modalStateOwner === tag && history.state && history.state.modalTag === tag) {
+      modalStateOwner = null;
+      history.back();
+    }
+  }
+  // Called when the back button/gesture itself fires popstate —
+  // just close whatever's open, don't push/pop further.
+  window.addEventListener('popstate', function() {
+    modalStateOwner = null;
+    ['membersOverlay', 'historyOverlay'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('active');
+    });
+  });
+
+  /* ══════════════════════════════
+     SWIPE-DOWN-TO-CLOSE
+     Drag from the handle/header always works;
+     dragging from the list only closes once it's
+     scrolled to the top (so normal scrolling isn't hijacked).
+  ══════════════════════════════ */
+  function enableSwipeToClose(overlayId, closeFn) {
+    const overlay = document.getElementById(overlayId);
+    if (!overlay) return;
+    const modal = overlay.querySelector('.members-modal');
+    const list  = overlay.querySelector('.members-list');
+    if (!modal) return;
+
+    let startY = 0, dy = 0, tracking = false, dragging = false;
+
+    overlay.addEventListener('touchstart', (e) => {
+      startY = e.touches[0].clientY;
+      dy = 0;
+      dragging = false;
+      const onCloseBtn = e.target.closest('.members-close-btn');
+      const onHandle = !onCloseBtn && e.target.closest('.members-modal-bar, .members-modal-header');
+      tracking = !!onHandle || !list || list.scrollTop <= 0;
+    }, { passive: true });
+
+    overlay.addEventListener('touchmove', (e) => {
+      if (!tracking) return;
+      const y = e.touches[0].clientY;
+      dy = y - startY;
+      if (dy <= 0) { dragging = false; modal.style.transform = ''; return; }
+      if (list && list.scrollTop > 0) { tracking = false; return; }
+      dragging = true;
+      modal.style.transition = 'none';
+      modal.style.transform = `translateY(${dy}px)`;
+      e.preventDefault();
+    }, { passive: false });
+
+    overlay.addEventListener('touchend', () => {
+      if (dragging) {
+        modal.style.transition = '';
+        if (dy > 90) closeFn();
+        modal.style.transform = '';
+      }
+      tracking = false;
+      dragging = false;
+      dy = 0;
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    enableSwipeToClose('membersOverlay', closeMembers);
+    enableSwipeToClose('historyOverlay', closeHistory);
+  });
 
 
 </script>
