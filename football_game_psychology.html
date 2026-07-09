@@ -255,6 +255,95 @@ body::after {
 .s-cb.br { bottom:12px; right:12px; border-bottom:2px solid rgba(0,230,118,0.4); border-right:2px solid rgba(0,230,118,0.4); }
 
 /* ══════════════════════════════
+   WELCOME INTERSTITIAL
+   Shown briefly between splash and poster
+══════════════════════════════ */
+#welcomeScreen {
+  position: fixed;
+  inset: 0;
+  background: #050a05;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 101;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+  overflow: hidden;
+}
+#welcomeScreen.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+#welcomeScreen.hide {
+  opacity: 0;
+  transform: scale(1.05);
+  pointer-events: none;
+}
+.welcome-content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(14px, 3.5vw, 22px);
+  padding: 28px;
+  text-align: center;
+}
+.welcome-icon {
+  font-size: clamp(38px, 10vw, 56px);
+  filter: drop-shadow(0 0 20px rgba(0,230,118,0.6));
+  animation: welcomeIconPop 0.7s cubic-bezier(0.28,0.84,0.42,1);
+}
+@keyframes welcomeIconPop {
+  0%   { transform: scale(0); opacity: 0; }
+  60%  { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); }
+}
+.welcome-title {
+  font-family: 'Anton', sans-serif;
+  font-size: clamp(52px, 17vw, 110px);
+  line-height: 0.9;
+  color: var(--green);
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  text-shadow: 0 0 55px rgba(0,230,118,0.7), 3px 3px 0 rgba(0,0,0,0.7);
+  animation: welcomeTitleIn 0.7s cubic-bezier(0.22,0.9,0.32,1) 0.1s both;
+}
+@keyframes welcomeTitleIn {
+  0%   { transform: translateY(22px); opacity: 0; letter-spacing: 10px; }
+  100% { transform: translateY(0); opacity: 1; letter-spacing: 3px; }
+}
+.welcome-msg {
+  max-width: 480px;
+  font-family: 'Oswald', sans-serif;
+  font-size: clamp(13px, 3.4vw, 17px);
+  font-weight: 400;
+  line-height: 1.55;
+  color: rgba(232,245,233,0.88);
+  letter-spacing: 0.5px;
+  animation: welcomeFadeIn 0.8s ease 0.35s both;
+}
+.welcome-msg .hi-line {
+  display: block;
+  margin-top: 6px;
+  color: var(--lime);
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+@keyframes welcomeFadeIn {
+  0%   { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.welcome-divider {
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--green), transparent);
+  animation: welcomeFadeIn 0.8s ease 0.2s both;
+}
+
+/* ══════════════════════════════
    POSTER PAGE
 ══════════════════════════════ */
 #poster-page {
@@ -1397,6 +1486,21 @@ body::after {
   white-space: nowrap;
   flex-shrink: 0;
   box-shadow: 0 0 10px rgba(255,234,0,0.4);
+}
+
+/* Vice-captain badge */
+.team-vc-badge {
+  background: linear-gradient(135deg, #b0bec5, #78909c);
+  color: #000;
+  font-family: 'Anton', sans-serif;
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-shadow: 0 0 10px rgba(176,190,197,0.35);
 }
 
 /* Footer */
@@ -2569,6 +2673,21 @@ body::after {
   </div>
 </div>
 
+<!-- ══ WELCOME INTERSTITIAL ══ -->
+<div id="welcomeScreen">
+  <div class="splash-pitch"></div>
+  <div class="splash-glow"></div>
+  <div class="welcome-content">
+    <div class="welcome-icon">⚽</div>
+    <div class="welcome-title">Welcome</div>
+    <div class="welcome-divider"></div>
+    <div class="welcome-msg">
+      On behalf of the Department of Psychology, thank you for joining us.
+      <span class="hi-line">We're glad to have you here — enjoy the match! ⚡</span>
+    </div>
+  </div>
+</div>
+
 <!-- ══ POSTER PAGE ══ -->
 <div id="poster-page">
   <div class="poster">
@@ -2895,25 +3014,37 @@ body::after {
 
 <script>
   function openPoster() {
-    const splash = document.getElementById('splash');
-    const poster = document.getElementById('poster-page');
+    const splash  = document.getElementById('splash');
+    const welcome = document.getElementById('welcomeScreen');
+    const poster  = document.getElementById('poster-page');
 
     // Ripple flash effect on button tap
     splash.style.background = 'rgba(0,230,118,0.08)';
     setTimeout(() => { splash.style.background = '#050a05'; }, 150);
 
-    // Hide splash, show poster
+    // Hide splash, reveal the warm welcome message
     setTimeout(() => {
       splash.classList.add('hide');
-      poster.classList.add('show');
-      // Scroll to top of poster
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      welcome.classList.add('show');
     }, 200);
 
-    // Remove splash from DOM after transition
+    // Remove splash from DOM after its transition
     setTimeout(() => {
       splash.style.display = 'none';
     }, 1100);
+
+    // Hold on the welcome message, then hand off to the poster
+    setTimeout(() => {
+      welcome.classList.add('hide');
+      poster.classList.add('show');
+      // Scroll to top of poster
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 950);
+
+    // Remove welcome screen from DOM after its transition
+    setTimeout(() => {
+      welcome.style.display = 'none';
+    }, 1550);
   }
   const organizers = {
     sadik: {
@@ -2976,14 +3107,17 @@ body::after {
     document.getElementById('profileNumber').textContent = org.contact;
     document.getElementById('profileContact').href = 'tel:' + org.contact;
     document.getElementById('profileOverlay').classList.add('active');
+    pushModalState('profile');
   }
   function closeProfile(e) {
     if (e.target === document.getElementById('profileOverlay')) {
       document.getElementById('profileOverlay').classList.remove('active');
+      popModalStateIfOwned('profile');
     }
   }
   function closeProfileBtn() {
     document.getElementById('profileOverlay').classList.remove('active');
+    popModalStateIfOwned('profile');
   }
 
   /* ── CALENDAR ── */
@@ -3081,7 +3215,7 @@ body::after {
     // ══════════════════════════════
     // HEADER — pitch-stripe band + ball motif
     // ══════════════════════════════
-    const headerH = 168;
+    const headerH = 138;
     doc.setFillColor(...dark);
     doc.rect(0, 0, pageW, headerH, 'F');
 
@@ -3096,17 +3230,17 @@ body::after {
 
     // concentric "ball" rings, top-right
     doc.setDrawColor(0, 200, 100);
-    [70, 50, 30].forEach((r, i) => {
+    [58, 42, 26].forEach((r, i) => {
       doc.setLineWidth(1.1);
       doc.setDrawColor(0, 200, 100);
-      doc.circle(pageW - 70, 64, r, 'S');
+      doc.circle(pageW - 62, 56, r, 'S');
     });
     doc.setFillColor(...green);
-    doc.circle(pageW - 70, 64, 13, 'F');
+    doc.circle(pageW - 62, 56, 11, 'F');
     doc.setFillColor(...dark);
     // simple pentagon-ish pattern dots on the ball to suggest a football
     doc.setFillColor(...dark);
-    doc.circle(pageW - 70, 64, 4, 'F');
+    doc.circle(pageW - 62, 56, 3.5, 'F');
 
     // green accent corner wedge top-left
     doc.setFillColor(...green);
@@ -3114,36 +3248,36 @@ body::after {
 
     doc.setTextColor(...green);
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(10);
-    doc.text('P S Y C H O L O G Y   D E P A R T M E N T', margin, 38);
+    doc.setFontSize(9.5);
+    doc.text('P S Y C H O L O G Y   D E P A R T M E N T', margin, 32);
 
     doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(28);
-    doc.text('Internal Football Match', margin, 68);
+    doc.setFontSize(24);
+    doc.text('Internal Football Match', margin, 58);
 
     // tagline badge (clipped-corner chip, like the poster's date chip)
     const tag = 'BATTLE WITHIN';
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(11);
-    const tagW = doc.getTextWidth(tag) + 26;
+    doc.setFontSize(10);
+    const tagW = doc.getTextWidth(tag) + 24;
     doc.setFillColor(...green);
-    doc.roundedRect(margin, 82, tagW, 24, 3, 3, 'F');
+    doc.roundedRect(margin, 70, tagW, 20, 3, 3, 'F');
     doc.setTextColor(...dark);
-    doc.text(tag, margin + 13, 98);
+    doc.text(tag, margin + 12, 84);
 
     doc.setTextColor(...lime);
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10.5);
-    doc.text('Friday, 10 July 2026   |   Kick-off 6:00 PM   |   UHFC Sports Complex', margin, 128);
+    doc.setFontSize(9.5);
+    doc.text('Friday, 10 July 2026   |   Kick-off 6:00 PM   |   UHFC Sports Complex', margin, 112);
 
     // bottom accent bar with two-tone split
     doc.setFillColor(...green);
-    doc.rect(0, headerH, pageW * 0.65, 5, 'F');
+    doc.rect(0, headerH, pageW * 0.65, 4, 'F');
     doc.setFillColor(...lime);
-    doc.rect(pageW * 0.65, headerH, pageW * 0.35, 5, 'F');
+    doc.rect(pageW * 0.65, headerH, pageW * 0.35, 4, 'F');
 
-    y = headerH + 42;
+    y = headerH + 26;
 
     // ══════════════════════════════
     // Section title helper
@@ -3157,12 +3291,12 @@ body::after {
       doc.text(String(num), margin + 9 - doc.getTextWidth(String(num))/2, y);
       doc.setTextColor(...textDark);
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(14);
+      doc.setFontSize(13);
       doc.text(label.toUpperCase(), margin + 26, y);
       doc.setDrawColor(220, 226, 220);
       doc.setLineWidth(0.8);
-      doc.line(margin + 26, y + 7, pageW - margin, y + 7);
-      y += 30;
+      doc.line(margin + 26, y + 6, pageW - margin, y + 6);
+      y += 24;
     }
 
     function checkPageBreak(needed) {
@@ -3184,9 +3318,9 @@ body::after {
       ['VENUE', 'UHFC Sports Complex'],
       ['FORMAT', 'Boys & Girls welcome'],
     ];
-    const cardGap = 14;
+    const cardGap = 10;
     const cardW = (pageW - margin * 2 - cardGap) / 2;
-    const cardH = 56;
+    const cardH = 46;
     const mapsUrl = 'https://maps.app.goo.gl/M5Fv6oKr1Eezhn1Z7';
     details.forEach(([k, v], i) => {
       const col = i % 2, row = Math.floor(i / 2);
@@ -3199,27 +3333,27 @@ body::after {
       doc.rect(cx, cy, 4, cardH, 'F');
       doc.setTextColor(...grey);
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(8.5);
-      doc.text(k, cx + 16, cy + 20);
+      doc.setFontSize(8);
+      doc.text(k, cx + 14, cy + 16);
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(12.5);
+      doc.setFontSize(11);
       if (isVenue) {
         doc.setTextColor(...greenDk);
-        doc.textWithLink(v, cx + 16, cy + 38, { url: mapsUrl });
+        doc.textWithLink(v, cx + 14, cy + 31, { url: mapsUrl });
         doc.setDrawColor(...greenDk);
         doc.setLineWidth(0.7);
         const linkW = doc.getTextWidth(v);
-        doc.line(cx + 16, cy + 40, cx + 16 + linkW, cy + 40);
+        doc.line(cx + 14, cy + 33, cx + 14 + linkW, cy + 33);
         doc.setFont('helvetica', 'normal');
-        doc.setFontSize(7.5);
+        doc.setFontSize(7);
         doc.setTextColor(...grey);
-        doc.text('TAP TO OPEN IN MAPS', cx + 16, cy + 50);
+        doc.text('TAP TO OPEN IN MAPS', cx + 14, cy + 41);
       } else {
         doc.setTextColor(...textDark);
-        doc.text(v, cx + 16, cy + 38);
+        doc.text(v, cx + 14, cy + 31);
       }
     });
-    y += 2 * (cardH + cardGap) - cardGap + 36;
+    y += 2 * (cardH + cardGap) - cardGap + 24;
 
     // ══════════════════════════════
     // SECTION 2 — Organizers (jersey-number cards)
@@ -3236,46 +3370,119 @@ body::after {
 
     const orgList = Object.values(organizers);
     orgList.forEach((o, i) => {
-      checkPageBreak(50);
+      checkPageBreak(34);
       const rowY = y;
       doc.setFillColor(...cream);
-      doc.roundedRect(margin, rowY - 16, pageW - margin * 2, 40, 5, 5, 'F');
+      doc.roundedRect(margin, rowY - 12, pageW - margin * 2, 30, 4, 4, 'F');
 
       // jersey-number badge
       doc.setFillColor(...dark);
-      doc.circle(margin + 24, rowY + 4, 15, 'F');
+      doc.circle(margin + 19, rowY + 3, 11.5, 'F');
       doc.setTextColor(...green);
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(11);
+      doc.setFontSize(9);
       const numStr = String(i + 1).padStart(2, '0');
-      doc.text(numStr, margin + 24 - doc.getTextWidth(numStr)/2, rowY + 8);
+      doc.text(numStr, margin + 19 - doc.getTextWidth(numStr)/2, rowY + 6);
 
       // name + role
       doc.setTextColor(...textDark);
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(11.5);
-      doc.text(o.name, margin + 52, rowY);
+      doc.setFontSize(10);
+      doc.text(o.name, margin + 40, rowY);
 
       const rc = roleColors[o.role] || grey;
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(7.5);
-      const roleW = doc.getTextWidth(o.role.toUpperCase()) + 12;
+      doc.setFontSize(6.5);
+      const roleW = doc.getTextWidth(o.role.toUpperCase()) + 10;
       doc.setFillColor(...rc);
-      doc.roundedRect(margin + 52, rowY + 6, roleW, 13, 3, 3, 'F');
+      doc.roundedRect(margin + 40, rowY + 4, roleW, 11, 3, 3, 'F');
       doc.setTextColor(255,255,255);
-      doc.text(o.role.toUpperCase(), margin + 58, rowY + 15.5);
+      doc.text(o.role.toUpperCase(), margin + 45, rowY + 12);
 
       // contact, right aligned
       doc.setTextColor(...textDark);
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(10.5);
-      doc.text(o.contact, pageW - margin - 14 - doc.getTextWidth(o.contact), rowY + 4);
+      doc.setFontSize(9.5);
+      doc.text(o.contact, pageW - margin - 12 - doc.getTextWidth(o.contact), rowY + 3);
 
-      y += 50;
+      y += 34;
     });
 
-    y += 20;
-    checkPageBreak(70);
+    y += 8;
+
+    // ══════════════════════════════
+    // SECTION 3 — Team Rosters (compact side-by-side tables)
+    // ══════════════════════════════
+    function hexToRgb(hex) {
+      const h = hex.replace('#', '');
+      return [
+        parseInt(h.substring(0, 2), 16),
+        parseInt(h.substring(2, 4), 16),
+        parseInt(h.substring(4, 6), 16),
+      ];
+    }
+
+    const teamKeys      = ['nahian', 'rahat'];
+    const rosterColGap  = 14;
+    const rosterColW    = (pageW - margin * 2 - rosterColGap) / 2;
+    const rosterRowH    = 12;
+    const rosterHeadH   = 17;
+    const maxPlayers    = Math.max(...teamKeys.map(k => teams[k].players.length));
+    const rosterBlockH  = rosterHeadH + 6 + maxPlayers * rosterRowH + 16;
+
+    checkPageBreak(rosterBlockH + 24);
+    sectionTitle('Team Rosters', '03');
+
+    const rosterTopY = y;
+    teamKeys.forEach((key, colIdx) => {
+      const team = teams[key];
+      const rgb  = hexToRgb(team.color);
+      const cx   = margin + colIdx * (rosterColW + rosterColGap);
+      let ry     = rosterTopY;
+
+      // team header bar
+      doc.setFillColor(...rgb);
+      doc.roundedRect(cx, ry, rosterColW, rosterHeadH, 3, 3, 'F');
+      doc.setTextColor(...dark);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8.5);
+      doc.text(team.name.toUpperCase(), cx + 9, ry + 11.5);
+      ry += rosterHeadH + 6;
+
+      // faint outer border around the whole mini-table
+      doc.setDrawColor(224, 228, 224);
+      doc.setLineWidth(0.6);
+      doc.roundedRect(cx, ry - 7, rosterColW, team.players.length * rosterRowH + 6, 3, 3, 'S');
+
+      team.players.forEach((p, i) => {
+        if (i % 2 === 0) {
+          doc.setFillColor(...cream);
+          doc.rect(cx, ry - 8.5, rosterColW, rosterRowH, 'F');
+        }
+        doc.setFont('helvetica', p.captain ? 'bold' : 'normal');
+        doc.setFontSize(7.5);
+        doc.setTextColor(...textDark);
+        doc.text(String(i + 1).padStart(2, '0'), cx + 7, ry);
+        doc.text(p.name, cx + 22, ry);
+
+        if (p.captain) {
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(6);
+          doc.setTextColor(...rgb);
+          doc.text('C', cx + rosterColW - 15, ry);
+        } else if (p.vc) {
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(5.5);
+          doc.setTextColor(...grey);
+          doc.text('VC', cx + rosterColW - 17, ry);
+        }
+        ry += rosterRowH;
+      });
+    });
+
+    y = rosterTopY + rosterHeadH + 6 + maxPlayers * rosterRowH + 16;
+
+    checkPageBreak(50);
 
     // ══════════════════════════════
     // Closing strip
@@ -3809,11 +4016,14 @@ body::after {
       color: '#00e676',
       gradBar: 'linear-gradient(90deg, transparent, #00e676 30%, #aeea00 60%, transparent)',
       players: [
-        { name: 'Rahat Anjum', captain: true },
-        { name: 'Kaiyum', captain: false },
-        { name: 'Rafad', captain: false },
-        { name: 'Nisheer', captain: false },
-        { name: 'Abir', captain: false },
+        { name: 'Rahat', captain: true, vc: false },
+        { name: 'Kaiyum', captain: false, vc: true },
+        { name: 'Akash', captain: false, vc: false },
+        { name: 'Abir', captain: false, vc: false },
+        { name: 'Ifti', captain: false, vc: false },
+        { name: 'Nibir', captain: false, vc: false },
+        { name: 'Rayhan', captain: false, vc: false },
+        { name: 'Limon', captain: false, vc: false },
       ]
     },
     nahian: {
@@ -3821,12 +4031,15 @@ body::after {
       color: '#aeea00',
       gradBar: 'linear-gradient(90deg, transparent, #aeea00 30%, #ffea00 60%, transparent)',
       players: [
-        { name: 'Nahian Sarkar', captain: true },
-        { name: 'Sadik', captain: false },
-        { name: 'Rafin', captain: false },
-        { name: 'Fardin', captain: false },
-        { name: 'Amir', captain: false },
-        { name: 'Oritro Mahalanobish Nobho', captain: false },
+        { name: 'Nahian', captain: true, vc: false },
+        { name: 'Fardin', captain: false, vc: true },
+        { name: 'Amir', captain: false, vc: false },
+        { name: 'Yeamin', captain: false, vc: false },
+        { name: 'Rafin', captain: false, vc: false },
+        { name: 'Oritro', captain: false, vc: false },
+        { name: 'Nisheer', captain: false, vc: false },
+        { name: 'Sokti', captain: false, vc: false },
+        { name: 'Dip', captain: false, vc: false },
       ]
     }
   };
@@ -3850,18 +4063,20 @@ body::after {
           <span style="font-size:16px;">👕</span>
         </div>
         <div class="team-player-info">
-          <div class="team-player-name" style="color:${p.captain ? team.color : '#e8f5e9'};">${p.name}</div>
-          <div class="team-player-tag" style="color:${team.color};">${p.captain ? '★ Captain' : 'Player'}</div>
+          <div class="team-player-name" style="color:${p.captain ? team.color : (p.vc ? '#cfd8dc' : '#e8f5e9')};">${p.name}</div>
+          <div class="team-player-tag" style="color:${team.color};">${p.captain ? '★ Captain' : (p.vc ? '☆ Vice Captain' : 'Player')}</div>
         </div>
-        ${p.captain ? `<div class="team-captain-badge">⚽ Captain</div>` : ''}
+        ${p.captain ? `<div class="team-captain-badge">⚽ Captain</div>` : (p.vc ? `<div class="team-vc-badge">Vice Captain</div>` : '')}
       </div>
     `).join('');
 
     document.getElementById('teamOverlay').classList.add('active');
+    pushModalState('team');
   }
 
   function closeTeam() {
     document.getElementById('teamOverlay').classList.remove('active');
+    popModalStateIfOwned('team');
   }
 
   function closeTeamOnBg(e) {
@@ -3910,7 +4125,7 @@ body::after {
       silTapTimers.push(setTimeout(() => {
         popEl.classList.remove('pop-show');
         popEl.classList.add('pop-hide');
-      }, 650));
+      }, 350));
     }
 
     // Open the roster right as the tag finishes fading, for a smooth handoff
@@ -3919,7 +4134,7 @@ body::after {
       silTapBusy = false;
       if (isRahat) openTeam('rahat');
       else         openTeam('nahian');
-    }, 900));
+    }, 500));
   }
   window.silTap = silTap;
 
@@ -4204,7 +4419,7 @@ body::after {
   // just close whatever's open, don't push/pop further.
   window.addEventListener('popstate', function() {
     modalStateOwner = null;
-    ['membersOverlay', 'historyOverlay'].forEach(id => {
+    ['membersOverlay', 'historyOverlay', 'teamOverlay', 'profileOverlay'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.classList.remove('active');
     });
