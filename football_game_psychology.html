@@ -524,39 +524,29 @@ body::after {
   border:1px solid rgba(0,230,118,0.14);
   border-radius:12px;
   position:relative;
+  overflow:hidden;
+  contain:layout paint style;
   cursor:pointer; -webkit-tap-highlight-color:transparent; touch-action:manipulation;
   animation:orgRowIn 0.55s cubic-bezier(0.22,1,0.36,1) both;
   transition:transform 0.3s cubic-bezier(0.22,1,0.36,1), border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
 }
-.org-beam { position:absolute; inset:0; width:100%; height:100%; overflow:visible; pointer-events:none; z-index:0; }
-.org-beam-trail {
-  fill:none;
-  stroke:#aeea00;
-  stroke-width:1.6;
-  stroke-linecap:round;
-  vector-effect:non-scaling-stroke;
-  stroke-dasharray:16 84;
-  stroke-dashoffset:0;
-  opacity:0.95;
-  filter:drop-shadow(0 0 2.5px rgba(174,234,0,0.95)) drop-shadow(0 0 6px rgba(0,230,118,0.6));
-  animation:orgBeamMove 3.4s linear infinite;
+.org-row::before {
+  content:'';
+  position:absolute; top:0; left:-35%; width:32%; height:100%;
+  background:linear-gradient(100deg, transparent, rgba(174,234,0,0.28), rgba(0,230,118,0.18), transparent);
+  pointer-events:none;
+  will-change:transform, opacity;
+  transform:translate3d(-40%,0,0);
+  opacity:0;
+  animation:orgSweep 3.6s cubic-bezier(0.4,0,0.2,1) infinite;
   animation-delay:var(--glow-delay, 0s);
 }
-.org-beam-tail {
-  fill:none;
-  stroke:#00e676;
-  stroke-width:1.2;
-  stroke-linecap:round;
-  vector-effect:non-scaling-stroke;
-  stroke-dasharray:30 70;
-  stroke-dashoffset:5;
-  opacity:0.35;
-  filter:blur(0.6px);
-  animation:orgBeamMove 3.4s linear infinite;
-  animation-delay:var(--glow-delay, 0s);
-}
-@keyframes orgBeamMove {
-  to { stroke-dashoffset:-100; }
+@keyframes orgSweep {
+  0%   { transform:translate3d(-40%,0,0); opacity:0; }
+  10%  { opacity:1; }
+  45%  { opacity:1; }
+  62%  { transform:translate3d(360%,0,0); opacity:0; }
+  100% { transform:translate3d(360%,0,0); opacity:0; }
 }
 .org-row:active {
   transform:scale(0.985);
@@ -1211,14 +1201,26 @@ body::after {
 }
 /* ── SILHOUETTE NAME POP-UP ── */
 .sil svg { overflow: visible; }
+.sil-figure { transition: opacity 0.28s ease; }
+.sil-figure.sil-flash {
+  animation: silFlashPulse 0.5s cubic-bezier(0.22,1,0.36,1);
+}
+@keyframes silFlashPulse {
+  0%   { filter: url(#gp) brightness(1)   drop-shadow(0 0 0 transparent); opacity: 0.93; }
+  35%  { filter: url(#gp) brightness(1.6) drop-shadow(0 0 14px var(--flash-color, #00e676)); opacity: 1; }
+  100% { filter: url(#gp) brightness(1)   drop-shadow(0 0 0 transparent); opacity: 0.93; }
+}
+.sil-pop { pointer-events: none; transform-box: fill-box; transform-origin: 50% 100%; }
+.sil-pop.pop-show { animation: popIn 0.38s cubic-bezier(0.22,1,0.36,1) forwards; }
+.sil-pop.pop-hide { animation: popOut 0.26s cubic-bezier(0.4,0,0.2,1) forwards; }
 @keyframes popIn {
-  0%   { opacity: 0; transform: translateY(6px); }
-  60%  { opacity: 1; transform: translateY(-2px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0%   { opacity: 0; transform: translateY(6px) scale(0.88); }
+  60%  { opacity: 1; transform: translateY(-2px) scale(1.02); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 @keyframes popOut {
-  0%   { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(4px); }
+  0%   { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(4px) scale(0.92); }
 }
 
 /* ── TEAM ROSTER MODAL ── */
@@ -1233,8 +1235,16 @@ body::after {
   align-items: center;
   justify-content: center;
   padding: 20px;
+  opacity: 0;
 }
-.team-overlay.active { display: flex; }
+.team-overlay.active {
+  display: flex;
+  animation: teamOverlayFade 0.3s ease forwards;
+}
+@keyframes teamOverlayFade {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
 
 .team-card {
   position: relative;
@@ -2729,7 +2739,7 @@ body::after {
           </g>
 
           <!-- RAHAT – left player kicking right -->
-          <g id="silRahat" fill="url(#pg1)" filter="url(#gp)" opacity="0.93" style="transition:filter 0.1s;">
+          <g id="silRahat" class="sil-figure" fill="url(#pg1)" filter="url(#gp)" opacity="0.93" style="--flash-color:#00e676;">
             <circle cx="72" cy="16" r="11"/>
             <rect x="63" y="27" width="18" height="27" rx="4"/>
             <rect x="44" y="28" width="20" height="7" rx="3" transform="rotate(20 54 31)"/>
@@ -2771,7 +2781,7 @@ body::after {
           <path d="M108,85 Q170,30 232,85" stroke="rgba(0,230,118,0.2)" stroke-width="1.5" fill="none" stroke-dasharray="5 4"/>
 
           <!-- NAHIAN – right player receiving -->
-          <g id="silNahian" fill="url(#pg2)" filter="url(#gp)" opacity="0.93" style="transition:filter 0.1s;">
+          <g id="silNahian" class="sil-figure" fill="url(#pg2)" filter="url(#gp)" opacity="0.93" style="--flash-color:#aeea00;">
             <circle cx="268" cy="16" r="11"/>
             <rect x="259" y="27" width="18" height="27" rx="4"/>
             <rect x="234" y="26" width="26" height="7" rx="3" transform="rotate(15 247 29)"/>
@@ -2794,7 +2804,7 @@ body::after {
           <text x="268" y="122" text-anchor="middle" font-family="'Oswald',sans-serif" font-size="11.5" font-weight="700" letter-spacing="2.5" fill="#aeea00" opacity="0.9">NAHIAN</text>
 
           <!-- ── RAHAT NAME POP-UP (hidden by default) ── -->
-          <g id="popRahat" opacity="0" style="pointer-events:none;">
+          <g id="popRahat" class="sil-pop" opacity="0" style="pointer-events:none;">
             <rect x="28" y="-22" width="88" height="26" rx="4" fill="rgba(0,0,0,0.88)" stroke="#00e676" stroke-width="1.5"/>
             <polygon points="72,6 66,4 78,4" fill="rgba(0,0,0,0.88)"/>
             <text x="72" y="-9" text-anchor="middle" font-family="'Anton',sans-serif" font-size="8" letter-spacing="1" fill="#00e676">RAHAT ANJUM</text>
@@ -2802,7 +2812,7 @@ body::after {
           </g>
 
           <!-- ── NAHIAN NAME POP-UP (hidden by default) ── -->
-          <g id="popNahian" opacity="0" style="pointer-events:none;">
+          <g id="popNahian" class="sil-pop" opacity="0" style="pointer-events:none;">
             <rect x="220" y="-22" width="96" height="26" rx="4" fill="rgba(0,0,0,0.88)" stroke="#aeea00" stroke-width="1.5"/>
             <polygon points="268,6 262,4 274,4" fill="rgba(0,0,0,0.88)"/>
             <text x="268" y="-9" text-anchor="middle" font-family="'Anton',sans-serif" font-size="8" letter-spacing="1" fill="#aeea00">NAHIAN SARKAR</text>
@@ -2944,11 +2954,7 @@ body::after {
     if (!wrap) return;
     wrap.innerHTML = order.map((key, i) => {
       const o = organizers[key];
-      return `<div class="org-row" style="animation-delay:${(i * 0.06).toFixed(2)}s; --glow-delay:${(i * 0.5).toFixed(2)}s" onclick="showProfile('${key}')">
-        <svg class="org-beam" viewBox="0 0 100 100" preserveAspectRatio="none">
-          <rect class="org-beam-tail" x="0.6" y="0.6" width="98.8" height="98.8" rx="7" pathLength="100"></rect>
-          <rect class="org-beam-trail" x="0.6" y="0.6" width="98.8" height="98.8" rx="7" pathLength="100"></rect>
-        </svg>
+      return `<div class="org-row" style="animation-delay:${(i * 0.06).toFixed(2)}s; --glow-delay:${(i * 0.45).toFixed(2)}s" onclick="showProfile('${key}')">
         <img class="org-photo" src="${o.photo}" alt="${o.name}" loading="lazy">
         <div class="org-info">
           <div class="org-name">${o.name}</div>
@@ -3862,28 +3868,58 @@ body::after {
     if (e.target === document.getElementById('teamOverlay')) closeTeam();
   }
 
-  /* ── SILHOUETTE TAP → GLOW FLASH + OPEN TEAM ROSTER ── */
+  /* ── SILHOUETTE TAP → NAME POP-UP + GLOW FLASH + OPEN TEAM ROSTER ── */
+  let silTapTimers = [];
+  let silTapBusy = false;
+
   function silTap(id) {
-    // Determine which silhouette and team
+    // Prevent overlapping sequences from rapid/double taps
+    silTapTimers.forEach(t => clearTimeout(t));
+    silTapTimers = [];
+    if (silTapBusy) {
+      document.querySelectorAll('.sil-pop').forEach(el => {
+        el.classList.remove('pop-show', 'pop-hide');
+      });
+      document.querySelectorAll('.sil-figure').forEach(el => {
+        el.classList.remove('sil-flash');
+      });
+    }
+    silTapBusy = true;
+
     const isRahat = id === 'popRahat';
     const silEl   = document.getElementById(isRahat ? 'silRahat' : 'silNahian');
-    const color   = isRahat ? '#00e676' : '#aeea00';
+    const popEl   = document.getElementById(id);
 
-    // Flash glow — override filter briefly, then restore
+    // Flash glow on the silhouette (self-contained CSS animation — no style snapping)
     if (silEl) {
-      silEl.style.filter = `drop-shadow(0 0 18px ${color}) drop-shadow(0 0 6px ${color}) brightness(1.6)`;
-      silEl.style.opacity = '1';
-      setTimeout(() => {
-        silEl.style.filter = '';
-        silEl.style.opacity = '0.93';
-      }, 320);
+      silEl.classList.remove('sil-flash');
+      silEl.getBoundingClientRect(); // force reflow so the animation restarts cleanly
+      silEl.classList.add('sil-flash');
+      silTapTimers.push(setTimeout(() => {
+        silEl.classList.remove('sil-flash');
+      }, 500));
     }
 
-    // Open modal with slight delay so glow is visible first
-    setTimeout(() => {
+    // Pop the name tag in
+    if (popEl) {
+      popEl.classList.remove('pop-hide', 'pop-show');
+      popEl.getBoundingClientRect(); // force reflow so the animation restarts cleanly
+      popEl.classList.add('pop-show');
+
+      // Hold, then pop it back out
+      silTapTimers.push(setTimeout(() => {
+        popEl.classList.remove('pop-show');
+        popEl.classList.add('pop-hide');
+      }, 650));
+    }
+
+    // Open the roster right as the tag finishes fading, for a smooth handoff
+    silTapTimers.push(setTimeout(() => {
+      if (popEl) popEl.classList.remove('pop-hide');
+      silTapBusy = false;
       if (isRahat) openTeam('rahat');
       else         openTeam('nahian');
-    }, 160);
+    }, 900));
   }
   window.silTap = silTap;
 
